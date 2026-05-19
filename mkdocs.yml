@@ -1,0 +1,82 @@
+﻿# MOM 制造运营管理系统 - 产品文档
+site_name: MOM 产品文档手册
+site_description: MOM 制造运营管理系统产品文档
+
+# 主题配置
+theme:
+  name: material
+  language: zh
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: 切换至暗色模式
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: 切换至亮色模式
+  features:
+    - navigation.tabs          # 顶部标签导航
+    - navigation.sections      # 侧边栏分节
+    - navigation.expand        # 展开侧边栏
+    - navigation.top           # 返回顶部按钮
+    - search.suggest           # 搜索建议
+    - search.highlight         # 搜索高亮
+    - content.code.copy        # 代码块复制按钮
+
+# 导航定义
+nav:
+  - 首页: index.md
+  - 总体框架:
+    - 系统概述: 01-总体框架/overview.md
+    - 技术架构: 01-总体框架/architecture.md
+    - 技术栈: 01-总体框架/tech-stack.md
+  - 业务模型:
+    - 领域模型: 02-业务模型/overview.md
+    - 核心流程: 02-业务模型/process-flow.md
+  - 基础设施:
+    - 部署架构: 03-基础设施/deployment.md
+    - 安全体系: 03-基础设施/security.md
+    - 监控运维: 03-基础设施/monitoring.md
+  - 业务模块:
+    - DBC 主数据管理: 04-DBC-主数据管理/index.md
+    - WMS 库房管理: 05-WMS-库房管理/index.md
+    - MES 生产管理: 06-MES-生产管理/index.md
+    - QMS 质量管理: 07-QMS-质量管理/index.md
+    - EAM 设备管理: 08-EAM-设备管理/index.md
+    - ANDON 异常管理: 09-ANDON-异常管理/index.md
+    - SCP 供应链平台: 10-SCP-供应链平台/index.md
+    - PS 排程管理: 11-PS-排程管理/index.md
+  - API 参考: 12-API参考/index.md
+  - 版本路线图: 13-版本路线图/index.md
+
+# Markdown 扩展
+markdown_extensions:
+  - admonition               # 提示框
+  - pymdownx.details         # 可折叠内容
+  - pymdownx.superfences     # 嵌套代码块
+  - pymdownx.highlight       # 代码高亮
+  - pymdownx.inlinehilite    # 行内代码高亮
+  - pymdownx.tabbed          # 标签页
+  - pymdownx.tasklist        # 任务列表
+  - tables                   # 表格增强
+  - toc:
+      permalink: true        # 标题锚点链接
+
+# 插件
+plugins:
+  - search:
+      lang: zh               # 中文搜索优化
+
+# 仓库信息（待替换为实际 Git 地址）
+repo_url: ''
+repo_name: ''
+
+# 版权
+copyright: Copyright &copy; 2026 MOM 产品团队
