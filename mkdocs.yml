@@ -44,6 +44,7 @@ nav:
     - 部署架构: 03-基础设施/deployment.md
     - 安全体系: 03-基础设施/security.md
     - 监控运维: 03-基础设施/monitoring.md
+    - 报表管理: 03-基础设施/reporting.md
   - 业务模块:
     - DBC 主数据管理: 04-DBC-主数据管理/index.md
     - WMS 库房管理: 05-WMS-库房管理/index.md
@@ -51,10 +52,12 @@ nav:
     - QMS 质量管理: 07-QMS-质量管理/index.md
     - EAM 设备管理: 08-EAM-设备管理/index.md
     - ANDON 异常管理: 09-ANDON-异常管理/index.md
+    - 系统管理: 12-系统管理/index.md
+    - 数采管理: 11-数采管理/index.md
     - SCP 供应链平台: 10-SCP-供应链平台/index.md
-    - PS 排程管理: 11-PS-排程管理/index.md
-  - API 参考: 12-API参考/index.md
-  - 版本路线图: 13-版本路线图/index.md
+    - PS 排程管理: 13-PS-排程管理/index.md
+  - API 参考: 14-API参考/index.md
+  - 版本路线图: 15-版本路线图/index.md
 
 # Markdown 扩展
 markdown_extensions:
