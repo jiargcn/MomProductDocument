@@ -3,3 +3,4 @@ site/
 .DS_Store
 *.pyc
 __pycache__/
+.playwright-cli

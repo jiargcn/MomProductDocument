@@ -48,3 +48,11 @@ mkdocs.yml              # MkDocs 站点配置
 ## 架构说明
 
 本文档采用"系统上下文→技术架构→业务模块"的渐进式结构。业务模块文档按**领域模型→核心流程→接口规范**三段式展开。
+
+
+## Playwright 数据提取
+
+- 不要用 playwright CLI 的 snapshot/eval/screenshot 解析 Vue 表格
+- 优先方案：启动 Playwright 脚本拦截 API 响应
+- 备用方案：用 page.waitForSelector('.el-table tbody tr') 等 DOM 就绪后再 extract
+- 登录态保存在 .playwright-cli/auth.json 中
