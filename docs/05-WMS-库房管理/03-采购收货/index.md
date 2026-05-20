@@ -160,15 +160,19 @@ flowchart TD
 
 | 字段名 | 中文名 | 类型 | 约束 | 影响业务 | 备注 |
 |--------|--------|------|------|----------|------|
-| request_no | 申请单号 | string | 系统自动生成 | 用于唯一标识本次收货申请 | 格式: PR-YYYYMMDD-XXXX |
-| po_no | 采购订单号 | string | 必填, FK | 关联采购订单，获取供应商/物料信息 | (待截图确认) |
-| supplier_id | 供应商 | string | 必填, FK | 确定送货方，影响后续供应商对账 | (待截图确认) |
-| warehouse_id | 仓库 | string | 必填, FK | 确定收货仓库，影响库存归属 | (待截图确认) |
-| expected_date | 预计到货日期 | date | 必填 | 用于提前备货和任务调度 | (待截图确认) |
-| material_list | 物料明细 | array | 至少一条 | 明确本次收货的物料清单 | (待截图确认) |
-| status | 申请单状态 | enum | 系统定义 | 控制流程走向: 待审批/已审批/已取消 | (待截图确认) |
-| creator | 创建人 | string | 系统自动 | 记录操作人员 | (待截图确认) |
-| create_time | 创建时间 | datetime | 系统自动 | 记录创建时间戳 | (待截图确认) |
+| request_no | 申请单号 | VARCHAR(50) | 系统自动生成 | 用于唯一标识本次收货申请 | 格式: PR-YYYYMMDD-XXXX |
+| po_no | 采购订单号 | VARCHAR(50) | 必填, FK | 关联采购订单，获取供应商/物料信息 | 来源采购模块 |
+| supplier_code | 供应商代码 | VARCHAR(50) | 必填 | 确定送货方，影响后续供应商对账 | 来自供应商主数据 |
+| order_type | 订单类型 | ENUM | 字典项 | 区分离散/标准采购等 | 离散/标准采购 |
+| material_code | 物料编码 | VARCHAR(50) | 必填 | 关联物料主数据 | |
+| material_name | 物料名称 | VARCHAR(200) | 显示 | 展示物料信息 | |
+| unit | 计量单位 | VARCHAR(20) | 显示 | 物料计量单位 | |
+| order_qty | 订单数量 | DECIMAL(12,3) | 必填 | 采购订单中的订购数量 | |
+| expected_date | 预计到货日期 | DATE | 必填 | 用于提前备货和任务调度 | |
+| status | 申请单状态 | ENUM | 系统定义 | 控制流程走向: 待审批/已审批/已取消 | |
+| tax_rate | 税率 | DECIMAL(5,2) | 显示 | 税率百分比 | |
+| creator | 创建人 | VARCHAR(50) | 系统自动 | 记录操作人员 | |
+| create_time | 创建时间 | DATETIME | 系统自动 | 记录创建时间戳 | |
 
 ### 2. 采购收货任务
 
@@ -178,17 +182,21 @@ flowchart TD
 
 | 字段名 | 中文名 | 类型 | 约束 | 影响业务 | 备注 |
 |--------|--------|------|------|----------|------|
-| task_id | 任务ID | string | PK | 唯一标识一个收货任务 | (待截图确认) |
-| request_no | 申请单号 | string | 显示 | 关联申请单信息 | (待截图确认) |
-| material_code | 物料编码 | string | 扫码获取 | 扫码枪扫描获取 | (待截图确认) |
-| material_name | 物料名称 | string | 显示 | 展示物料信息 | (待截图确认) |
-| expected_qty | 期望数量 | decimal | 来自订单 | 采购订单中的订购数量 | (待截图确认) |
-| received_qty | 实收数量 | decimal | 必填 | 仓管员实际清点数量 | (待截图确认) |
-| diff_qty | 差异数量 | decimal | 计算字段 | received_qty - expected_qty | (待截图确认) |
-| scan_status | 扫码状态 | enum | 系统定义 | 已扫码/未扫码 | (待截图确认) |
-| task_status | 任务状态 | enum | 系统定义 | 待执行/执行中/已完成 | (待截图确认) |
-| receiver | 接收人 | string | 系统自动 | 记录执行任务的仓管员 | (待截图确认) |
-| receive_time | 接收时间 | datetime | 系统自动 | 记录任务完成时间 | (待截图确认) |
+| task_id | 任务ID | VARCHAR(50) | PK | 唯一标识一个收货任务 | |
+| request_no | 申请单号 | VARCHAR(50) | FK | 关联申请单信息 | |
+| po_no | 采购订单号 | VARCHAR(50) | 显示 | 关联采购订单 | |
+| supplier_code | 供应商代码 | VARCHAR(50) | 显示 | 展示供应商信息 | |
+| material_code | 物料编码 | VARCHAR(50) | 扫码获取 | 扫码枪扫描获取 | |
+| material_name | 物料名称 | VARCHAR(200) | 显示 | 展示物料信息 | |
+| unit | 计量单位 | VARCHAR(20) | 显示 | 物料计量单位 | |
+| order_qty | 订单数量 | DECIMAL(12,3) | 来自订单 | 采购订单中的订购数量 | |
+| expected_qty | 期望数量 | DECIMAL(12,3) | 计算 | order_qty - 已收货数量 | |
+| received_qty | 实收数量 | DECIMAL(12,3) | 必填 | 仓管员实际清点数量 | |
+| diff_qty | 差异数量 | DECIMAL(12,3) | 计算字段 | received_qty - expected_qty | 正值多收，负值少收 |
+| scan_status | 扫码状态 | ENUM | 系统定义 | 已扫码/未扫码 | |
+| task_status | 任务状态 | ENUM | 系统定义 | 待执行/执行中/已完成 | |
+| receiver | 接收人 | VARCHAR(50) | 系统自动 | 记录执行任务的仓管员 | |
+| receive_time | 接收时间 | DATETIME | 系统自动 | 记录任务完成时间 | |
 
 ### 3. 采购收货记录
 
@@ -198,21 +206,22 @@ flowchart TD
 
 | 字段名 | 中文名 | 类型 | 约束 | 影响业务 | 备注 |
 |--------|--------|------|------|----------|------|
-| receipt_no | 收货单号 | string | PK | 唯一标识本次收货记录 | (待截图确认) |
-| po_no | 采购订单号 | string | 显示 | 关联采购订单 | (待截图确认) |
-| supplier_id | 供应商 | string | FK | 影响供应商对账和发票匹配 | (待截图确认) |
-| supplier_name | 供应商名称 | string | 显示 | 展示供应商信息 | (待截图确认) |
-| warehouse_id | 仓库 | string | FK | 影响库存归属 | (待截图确认) |
-| warehouse_name | 仓库名称 | string | 显示 | 展示仓库信息 | (待截图确认) |
-| material_id | 物料ID | string | FK | 关联物料主数据 | (待截图确认) |
-| material_code | 物料编码 | string | 显示 | 物料唯一标识 | (待截图确认) |
-| material_name | 物料名称 | string | 显示 | 物料描述信息 | (待截图确认) |
-| quantity | 收货数量 | decimal | 必填 | 实际入库数量 | (待截图确认) |
-| diff_qty | 差异数量 | decimal | 显示 | 与期望数量的差异 | (待截图确认) |
-| receipt_date | 收货日期 | date | 必填 | 记录实际收货日期 | (待截图确认) |
-| receipt_time | 收货时间 | datetime | 系统自动 | 记录过账时间 | (待截图确认) |
-| receipt_by | 收货人 | string | 系统自动 | 记录执行仓管员 | (待截图确认) |
-| status | 单据状态 | enum | 系统定义 | 已完成/已冲销 | (待截图确认) |
+| receipt_no | 收货单号 | VARCHAR(50) | PK | 唯一标识本次收货记录 | 格式: PR-YYYYMMDD-XXXX |
+| po_no | 采购订单号 | VARCHAR(50) | FK | 关联采购订单 | 来自采购模块 |
+| supplier_code | 供应商代码 | VARCHAR(50) | 必填 | 确定送货方 | 影响后续供应商对账 |
+| supplier_name | 供应商名称 | VARCHAR(200) | 显示 | 展示供应商信息 | (待截图确认) |
+| order_type | 订单类型 | ENUM | 字典项 | 区分离散/标准等订单 | 离散/标准等 |
+| status | 单据状态 | ENUM | 系统定义 | 控制流程走向 | 待处理/进行中/已完成/已冲销 |
+| receipt_date | 收货日期 | DATE | 必填 | 记录实际收货日期 | |
+| warehouse_code | 仓库编码 | VARCHAR(50) | FK | 确定收货仓库 | 影响库存归属 |
+| material_code | 物料编码 | VARCHAR(50) | 必填 | 关联物料主数据 | |
+| material_name | 物料名称 | VARCHAR(200) | 显示 | 展示物料信息 | |
+| unit | 计量单位 | VARCHAR(20) | 显示 | 物料计量单位 | |
+| quantity | 收货数量 | DECIMAL(12,3) | 必填 | 实际入库数量 | |
+| diff_qty | 差异数量 | DECIMAL(12,3) | 显示 | 与期望数量的差异 | 正值多收，负值少收 |
+| tax_rate | 税率 | DECIMAL(5,2) | 显示 | 税率百分比 | |
+| receipt_time | 收货时间 | DATETIME | 系统自动 | 记录过账时间 | |
+| receipt_by | 收货人 | VARCHAR(50) | 系统自动 | 记录执行仓管员 | |
 
 ### 4. 采购拒收记录
 
