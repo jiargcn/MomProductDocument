@@ -1,1 +1,470 @@
-08-生产管理
+# 08-生产管理
+
+## 概述
+
+生产管理模块承接 MES/MOM 下达的生产指令，负责管理车间完工制品的入库全流程。包括生产计划、制品收货（含正品/隔离）、完工撤销、制品拆解、制品返修、制品上架六大核心业务功能，覆盖从工单释放到成品入库的全生命周期管理。
+
+## 领域模型
+
+```mermaid
+erDiagram
+    生产计划 ||--o{ 制品收货申请 : 下达
+    生产计划 {
+        string workOrderNo "工单号"
+        string materialCode "物料编码"
+        decimal planQty "计划数量"
+        string unit "单位"
+        string status "状态"
+        date startDate "开始日期"
+        date endDate "结束日期"
+        string workCenter "工作中心"
+        string productionLine "产线"
+    }
+
+    制品收货申请 ||--o{ 制品收货任务 : 分配
+    制品收货申请 ||--o{ 制品收货记录 : 确认
+    制品收货申请 {
+        string applicationNo "申请单号"
+        string workOrderNo "工单号"
+        string materialCode "物料编码"
+        decimal applyQty "申请数量"
+        string unit "单位"
+        string warehouseCode "仓库编码"
+        string status "状态"
+        string applicant "申请人"
+        date applyDate "申请日期"
+    }
+
+    制品收货任务 {
+        string taskNo "任务编号"
+        string applicationNo "申请单号"
+        string materialCode "物料编码"
+        decimal taskQty "任务数量"
+        string targetLocation "目标库位"
+        string assignee "执行人"
+        string status "状态"
+        date assignDate "分配日期"
+    }
+
+    制品收货记录 {
+        string receiptNo "收货单号"
+        string applicationNo "申请单号"
+        string taskNo "任务编号"
+        string materialCode "物料编码"
+        decimal receivedQty "收货数量"
+        string lotNo "批次号"
+        date receiptDate "收货日期"
+        string warehouseCode "仓库编码"
+        string locationCode "库位编码"
+        string inspector "验收人"
+        string status "状态"
+    }
+
+    完工撤销记录 ||--o{ 制品收货记录 : 冲销
+    完工撤销记录 {
+        string revokeNo "撤销单号"
+        string workOrderNo "工单号"
+        string receiptNo "原收货单号"
+        decimal revokeQty "撤销数量"
+        string reason "撤销原因"
+        date revokeDate "撤销日期"
+        string applicant "申请人"
+        string status "状态"
+    }
+
+    隔离收货申请 ||--o{ 隔离收货任务 : 分配
+    隔离收货申请 ||--o{ 隔离收货记录 : 确认
+    隔离收货申请 {
+        string applicationNo "申请单号"
+        string workOrderNo "工单号"
+        string materialCode "物料编码"
+        decimal applyQty "申请数量"
+        string reason "隔离原因"
+        string isHold "是否隔离"
+        string warehouseCode "目标仓库"
+        string status "状态"
+    }
+
+    隔离收货任务 {
+        string taskNo "任务编号"
+        string applicationNo "申请单号"
+        string materialCode "物料编码"
+        decimal taskQty "任务数量"
+        string targetLocation "隔离库位"
+        string assignee "执行人"
+        string status "状态"
+    }
+
+    隔离收货记录 {
+        string receiptNo "收货单号"
+        string applicationNo "申请单号"
+        string materialCode "物料编码"
+        decimal receivedQty "收货数量"
+        string lotNo "批次号"
+        date receiptDate "收货日期"
+        string warehouseCode "仓库编码"
+        string locationCode "库位编码"
+        string status "状态"
+        string holdReason "隔离原因"
+    }
+
+    制品拆解申请 ||--o{ 制品拆解记录 : 执行
+    制品拆解申请 {
+        string applicationNo "申请单号"
+        string sourceReceiptNo "源收货单号"
+        string materialCode "物料编码"
+        decimal applyQty "申请数量"
+        string targetMaterialCode "目标物料编码"
+        string status "状态"
+        date applyDate "申请日期"
+    }
+
+    制品拆解记录 {
+        string recordNo "记录编号"
+        string applicationNo "申请单号"
+        string sourceReceiptNo "源收货单号"
+        string materialCode "源物料编码"
+        decimal sourceQty "源数量"
+        string targetMaterialCode "目标物料编码"
+        decimal targetQty "目标数量"
+        string warehouseCode "仓库编码"
+        date dismantleDate "拆解日期"
+        string status "状态"
+    }
+
+    制品返修申请 ||--o{ 制品返修记录 : 执行
+    制品返修申请 {
+        string applicationNo "申请单号"
+        string sourceReceiptNo "源收货单号"
+        string materialCode "物料编码"
+        decimal applyQty "返修数量"
+        string reason "返修原因"
+        string status "状态"
+        date applyDate "申请日期"
+    }
+
+    制品返修记录 {
+        string recordNo "记录编号"
+        string applicationNo "申请单号"
+        string sourceReceiptNo "源收货单号"
+        string materialCode "物料编码"
+        decimal repairQty "返修数量"
+        decimal newReceiptQty "新收货数量"
+        string warehouseCode "仓库编码"
+        date repairDate "返修日期"
+        string status "状态"
+    }
+
+    制品上架申请 ||--o{ 制品上架任务 : 分配
+    制品上架申请 ||--o{ 制品上架记录 : 确认
+    制品上架申请 {
+        string applicationNo "申请单号"
+        string sourceReceiptNo "源收货单号"
+        string materialCode "物料编码"
+        decimal applyQty "申请数量"
+        string sourceWarehouse "源仓库"
+        string targetWarehouse "目标仓库"
+        string status "状态"
+        date applyDate "申请日期"
+    }
+
+    制品上架任务 {
+        string taskNo "任务编号"
+        string applicationNo "申请单号"
+        string materialCode "物料编码"
+        decimal taskQty "任务数量"
+        string sourceLocation "源库位"
+        string targetLocation "目标库位"
+        string assignee "执行人"
+        string status "状态"
+    }
+
+    制品上架记录 {
+        string recordNo "记录编号"
+        string applicationNo "申请单号"
+        string taskNo "任务编号"
+        string materialCode "物料编码"
+        decimal shelfQty "上架数量"
+        string lotNo "批次号"
+        date shelfDate "上架日期"
+        string warehouseCode "仓库编码"
+        string locationCode "库位编码"
+        string status "状态"
+    }
+```
+
+## 核心流程
+
+### 8.1 制品收货流程
+
+```mermaid
+flowchart TD
+    A[MES/MOM 下达生产工单] --> B[生产计划释放]
+    B --> C[车间完成生产]
+    C --> D{制品类型判定}
+    D -->|正品| E[制品收货申请]
+    D -->|质量异常| F[隔离收货申请]
+    E --> G[创建制品收货任务]
+    G --> H[仓库执行收货]
+    H --> I[验收人确认收货]
+    I --> J[生成制品收货记录]
+    J --> K[库存台账更新]
+    F --> L[创建隔离收货任务]
+    L --> M[入库隔离库]
+    M --> N[生成隔离收货记录]
+    N --> O[库存台账更新-隔离库标识]
+```
+
+### 8.2 完工撤销流程
+
+```mermaid
+flowchart LR
+    A[已完成收货的工单需撤销] --> B[创建完工撤销申请]
+    B --> C{撤销类型判定}
+    C -->|完全撤销| D[冲销全部入库记录]
+    C -->|部分撤销| E[按数量比例冲销]
+    D --> F[生成撤销单]
+    E --> F
+    F --> G[原收货单状态变更为已撤销]
+    G --> H[库存台账红字回冲]
+    H --> I[工单状态更新]
+```
+
+### 8.3 制品拆解/返修/上架流程
+
+```mermaid
+flowchart TD
+    A[制品需处理] --> B{处理类型}
+    B -->|拆解| C[制品拆解申请]
+    B -->|返修| D[制品返修申请]
+    B -->|重新上架| E[制品上架申请]
+
+    C --> C1[审批拆解申请]
+    C1 --> C2[执行拆解作业]
+    C2 --> C3[生成拆解记录-源物料出库]
+    C3 --> C4[生成拆解记录-目标物料入库]
+
+    D --> D1[审批返修申请]
+    D1 --> D2[源制品移出正品库]
+    D2 --> D3[返修完成后新收货]
+    D3 --> D4[生成返修记录]
+
+    E --> E1[从上架源创建上架任务]
+    E1 --> E2[从隔离区/退货区拣货]
+    E2 --> E3[上架到正品库位]
+    E3 --> E4[生成上架记录]
+```
+
+## 字段说明
+
+### 8.1 生产计划
+
+| 字段名 | 中文名 | 类型 | 约束 | 影响业务 | 备注 |
+|--------|--------|------|------|----------|------|
+| workOrderNo | 工单号 | VARCHAR(50) | 必填 | 制品收货/完工撤销/返修/拆解（工单唯一标识） | 工单在系统中的唯一身份标识 |
+| materialCode | 物料编码 | VARCHAR(50) | 必填 | 制品收货（收货物料判定）、库存台账（入库物料） | 引用物料主数据 |
+| planQty | 计划数量 | DECIMAL(18,6) | 必填 | 制品收货（收货上限控制）、完工率统计 | 工单下达时的计划生产数量 |
+| unit | 单位 | VARCHAR(10) | 必填 | 数量统计、成本核算 | 工单计量单位 |
+| status | 状态 | ENUM | 字典项 | 制品收货（下单状态才可收货）、报表统计 | 如：已释放、生产中、已完工、已关闭 |
+| startDate | 开始日期 | DATE | 非必填 | 生产调度、齐套检查 | 工单计划开始日期 |
+| endDate | 结束日期 | DATE | 非必填 | 生产调度、逾期预警 | 工单计划结束日期 |
+| workCenter | 工作中心 | VARCHAR(50) | 非必填 | 报工、产能计算 | 引用工作中心主数据 |
+| productionLine | 产线 | VARCHAR(50) | 非必填 | 报工、车间级统计 | 引用产线主数据 |
+
+### 8.2 制品收货申请
+
+| 字段名 | 中文名 | 类型 | 约束 | 影响业务 | 备注 |
+|--------|--------|------|------|----------|------|
+| applicationNo | 申请单号 | VARCHAR(50) | 必填 | 制品收货任务（关联申请单）、收货记录（追溯申请来源） | 申请单唯一标识，格式如：SC-YYYYMMDD-XXXX |
+| workOrderNo | 工单号 | VARCHAR(50) | 必填 | 制品收货任务（工单追溯）、完工撤销（关联撤销） | 引用生产工单 |
+| materialCode | 物料编码 | VARCHAR(50) | 必填 | 制品收货任务（物料信息）、库存台账（入库物料） | 引用物料主数据 |
+| applyQty | 申请数量 | DECIMAL(18,6) | 必填 | 制品收货任务（任务数量上限）、库存预期 | 本次申请收货的数量 |
+| unit | 单位 | VARCHAR(10) | 必填 | 数量展示、统计 | 计量单位 |
+| warehouseCode | 仓库编码 | VARCHAR(50) | 必填 | 库存台账（入库仓库）、报表统计 | 目标仓库，引用仓库主数据 |
+| status | 状态 | ENUM | 字典项 | 制品收货任务（只有生效状态才可分配任务） | 如：草稿、已提交、已分配、已完成、已取消 |
+| applicant | 申请人 | VARCHAR(50) | 必填 | 审批流程、追溯 | 申请人用户编码 |
+| applyDate | 申请日期 | DATE | 必填 | 报表统计、时效分析 | 申请日期 |
+
+### 8.3 制品收货任务
+
+| 字段名 | 中文名 | 类型 | 约束 | 影响业务 | 备注 |
+|--------|--------|------|------|----------|------|
+| taskNo | 任务编号 | VARCHAR(50) | 必填 | 制品收货记录（关联任务）、执行追溯 | 任务唯一标识，格式如：RCT-YYYYMMDD-XXXX |
+| applicationNo | 申请单号 | VARCHAR(50) | 必填 | 制品收货记录（追溯申请来源） | 引用制品收货申请 |
+| materialCode | 物料编码 | VARCHAR(50) | 必填 | 仓库作业（物料识别）、库存台账 | 引用物料主数据 |
+| taskQty | 任务数量 | DECIMAL(18,6) | 必填 | 制品收货记录（收货数量上限控制） | 本次任务要求收货的数量 |
+| targetLocation | 目标库位 | VARCHAR(50) | 必填 | 制品收货记录（默认入库库位） | 引用库位主数据 |
+| assignee | 执行人 | VARCHAR(50) | 必填 | 任务指派、执行追溯 | 仓库作业员 |
+| status | 状态 | ENUM | 字典项 | 仓库作业（待执行/执行中/已完成） | 如：待指派、待执行、执行中、已完成、已取消 |
+| assignDate | 分配日期 | DATE | 必填 | 任务调度、时效统计 | 任务分配日期 |
+
+### 8.4 制品收货记录
+
+| 字段名 | 中文名 | 类型 | 约束 | 影响业务 | 备注 |
+|--------|--------|------|------|----------|------|
+| receiptNo | 收货单号 | VARCHAR(50) | 必填 | 完工撤销（关联原收货单）、库存台账（关联入库单据） | 收货单唯一标识，格式如：RC-YYYYMMDD-XXXX |
+| applicationNo | 申请单号 | VARCHAR(50) | 必填 | 追溯申请来源、统计收货效率 | 引用制品收货申请 |
+| taskNo | 任务编号 | VARCHAR(50) | 必填 | 追溯任务执行情况 | 引用制品收货任务 |
+| materialCode | 物料编码 | VARCHAR(50) | 必填 | 库存台账（入库物料） | 引用物料主数据 |
+| receivedQty | 收货数量 | DECIMAL(18,6) | 必填 | 库存台账（入库数量）、成本核算 | 实际收货数量 |
+| lotNo | 批次号 | VARCHAR(50) | 非必填 | 库存台账（批次管理）、追溯查询 | 如无批次管理可不填 |
+| receiptDate | 收货日期 | DATE | 必填 | 库存台账（入库时间）、报表统计 | 实际收货日期 |
+| warehouseCode | 仓库编码 | VARCHAR(50) | 必填 | 库存台账（入库仓库） | 引用仓库主数据 |
+| locationCode | 库位编码 | VARCHAR(50) | 必填 | 库存台账（入库库位） | 引用库位主数据 |
+| inspector | 验收人 | VARCHAR(50) | 必填 | 质量追溯（验收责任人） | 质量验收人员 |
+| status | 状态 | ENUM | 字典项 | 完工撤销（下单/部分收货状态才可撤销） | 如：已收货、已撤销、部分撤销 |
+
+### 8.5 完工撤销记录
+
+| 字段名 | 中文名 | 类型 | 约束 | 影响业务 | 备注 |
+|--------|--------|------|------|----------|------|
+| revokeNo | 撤销单号 | VARCHAR(50) | 必填 | 制品收货记录（关联撤销单）、报表统计 | 撤销单唯一标识，格式如：CRV-YYYYMMDD-XXXX |
+| workOrderNo | 工单号 | VARCHAR(50) | 必填 | 工单状态更新（撤销后工单可重新下达）、追溯 | 引用原生产工单 |
+| receiptNo | 原收货单号 | VARCHAR(50) | 必填 | 制品收货记录（状态更新为已撤销）、库存红冲 | 引用原制品收货记录 |
+| revokeQty | 撤销数量 | DECIMAL(18,6) | 必填 | 库存台账（红字回冲数量）、成本核算 | 本次撤销的数量 |
+| reason | 撤销原因 | VARCHAR(500) | 必填 | 审批判断、追溯分析 | 撤销原因说明 |
+| revokeDate | 撤销日期 | DATE | 必填 | 报表统计、时效分析 | 实际撤销日期 |
+| applicant | 申请人 | VARCHAR(50) | 必填 | 审批流程、追溯 | 申请人用户编码 |
+| status | 状态 | ENUM | 字典项 | 工单状态更新、报表统计 | 如：已提交、已审批、已执行、已驳回 |
+
+### 8.6 隔离收货申请
+
+| 字段名 | 中文名 | 类型 | 约束 | 影响业务 | 备注 |
+|--------|--------|------|------|----------|------|
+| applicationNo | 申请单号 | VARCHAR(50) | 必填 | 隔离收货任务（关联申请）、隔离收货记录（追溯） | 申请单唯一标识，格式如：IC-YYYYMMDD-XXXX |
+| workOrderNo | 工单号 | VARCHAR(50) | 必填 | 追溯来源工单 | 引用生产工单 |
+| materialCode | 物料编码 | VARCHAR(50) | 必填 | 隔离收货任务、库存台账 | 引用物料主数据 |
+| applyQty | 申请数量 | DECIMAL(18,6) | 必填 | 隔离收货任务（数量上限） | 本次申请隔离收货的数量 |
+| reason | 隔离原因 | VARCHAR(500) | 必填 | 质量追溯、隔离库管理 | 如：来料不良、过程异常、客诉冻结 |
+| isHold | 是否隔离 | BOOLEAN | 必填 | 库存台账（隔离标识）、报表筛选 | 标识进入隔离库 |
+| warehouseCode | 目标仓库 | VARCHAR(50) | 必填 | 库存台账（入库仓库） | 隔离库仓库编码 |
+| status | 状态 | ENUM | 字典项 | 隔离收货任务（生效才可分配任务） | 如：草稿、已提交、已分配、已完成、已取消 |
+
+### 8.7 隔离收货任务
+
+| 字段名 | 中文名 | 类型 | 约束 | 影响业务 | 备注 |
+|--------|--------|------|------|----------|------|
+| taskNo | 任务编号 | VARCHAR(50) | 必填 | 隔离收货记录（关联任务） | 任务唯一标识，格式如：ICT-YYYYMMDD-XXXX |
+| applicationNo | 申请单号 | VARCHAR(50) | 必填 | 追溯申请来源 | 引用隔离收货申请 |
+| materialCode | 物料编码 | VARCHAR(50) | 必填 | 仓库作业、库存台账 | 引用物料主数据 |
+| taskQty | 任务数量 | DECIMAL(18,6) | 必填 | 隔离收货记录（收货数量上限） | 本次任务要求收货的数量 |
+| targetLocation | 隔离库位 | VARCHAR(50) | 必填 | 隔离收货记录（入库库位） | 隔离区专用库位 |
+| assignee | 执行人 | VARCHAR(50) | 必填 | 任务指派、执行追溯 | 仓库作业员 |
+| status | 状态 | ENUM | 字典项 | 仓库作业调度 | 如：待指派、待执行、执行中、已完成、已取消 |
+
+### 8.8 隔离收货记录
+
+| 字段名 | 中文名 | 类型 | 约束 | 影响业务 | 备注 |
+|--------|--------|------|------|----------|------|
+| receiptNo | 收货单号 | VARCHAR(50) | 必填 | 制品上架（源单据）、库存台账 | 收货单唯一标识，格式如：ICR-YYYYMMDD-XXXX |
+| applicationNo | 申请单号 | VARCHAR(50) | 必填 | 追溯申请来源 | 引用隔离收货申请 |
+| materialCode | 物料编码 | VARCHAR(50) | 必填 | 库存台账（入库物料） | 引用物料主数据 |
+| receivedQty | 收货数量 | DECIMAL(18,6) | 必填 | 库存台账（入库数量） | 实际收货数量 |
+| lotNo | 批次号 | VARCHAR(50) | 非必填 | 批次追溯、库存管理 | 批次号 |
+| receiptDate | 收货日期 | DATE | 必填 | 库存台账（入库时间）、报表统计 | 实际收货日期 |
+| warehouseCode | 仓库编码 | VARCHAR(50) | 必填 | 库存台账（入库仓库-隔离库） | 引用仓库主数据 |
+| locationCode | 库位编码 | VARCHAR(50) | 必填 | 库存台账（入库库位） | 隔离区库位 |
+| status | 状态 | ENUM | 字典项 | 制品上架（可上架状态才可申请上架） | 如：已收货、已上架、部分上架、已取消 |
+| holdReason | 隔离原因 | VARCHAR(500) | 必填 | 质量追溯、隔离库统计 | 原隔离原因 |
+
+### 8.9 制品拆解申请
+
+| 字段名 | 中文名 | 类型 | 约束 | 影响业务 | 备注 |
+|--------|--------|------|------|----------|------|
+| applicationNo | 申请单号 | VARCHAR(50) | 必填 | 制品拆解记录（关联申请） | 申请单唯一标识，格式如：DC-YYYYMMDD-XXXX |
+| sourceReceiptNo | 源收货单号 | VARCHAR(50) | 必填 | 制品拆解记录（源物料来源）、原收货单状态更新 | 引用制品收货记录 |
+| materialCode | 物料编码 | VARCHAR(50) | 必填 | 制品拆解记录（源物料信息） | 引用物料主数据 |
+| applyQty | 申请数量 | DECIMAL(18,6) | 必填 | 制品拆解记录（拆解数量控制） | 本次申请拆解的数量 |
+| targetMaterialCode | 目标物料编码 | VARCHAR(50) | 必填 | 制品拆解记录（目标物料入库） | 拆解后生成的子物料编码 |
+| status | 状态 | ENUM | 字典项 | 制品拆解记录（生效才可执行） | 如：草稿、已提交、已审批、已完成、已取消 |
+| applyDate | 申请日期 | DATE | 必填 | 报表统计、时效分析 | 申请日期 |
+
+### 8.10 制品拆解记录
+
+| 字段名 | 中文名 | 类型 | 约束 | 影响业务 | 备注 |
+|--------|--------|------|------|----------|------|
+| recordNo | 记录编号 | VARCHAR(50) | 必填 | 追溯查询、报表统计 | 记录唯一标识，格式如：DCR-YYYYMMDD-XXXX |
+| applicationNo | 申请单号 | VARCHAR(50) | 必填 | 追溯申请来源 | 引用制品拆解申请 |
+| sourceReceiptNo | 源收货单号 | VARCHAR(50) | 必填 | 原收货单状态更新、库存出库 | 引用制品收货记录 |
+| materialCode | 源物料编码 | VARCHAR(50) | 必填 | 库存台账（源物料出库） | 被拆解的物料 |
+| sourceQty | 源数量 | DECIMAL(18,6) | 必填 | 库存台账（出库数量） | 拆解的源物料数量 |
+| targetMaterialCode | 目标物料编码 | VARCHAR(50) | 必填 | 库存台账（目标物料入库） | 拆解后生成的子物料 |
+| targetQty | 目标数量 | DECIMAL(18,6) | 必填 | 库存台账（入库数量） | 拆解后生成的子物料数量 |
+| warehouseCode | 仓库编码 | VARCHAR(50) | 必填 | 库存台账（出库/入库仓库） | 引用仓库主数据 |
+| dismantleDate | 拆解日期 | DATE | 必填 | 报表统计、追溯 | 实际拆解日期 |
+| status | 状态 | ENUM | 字典项 | 库存台账更新、报表统计 | 如：已拆解、已取消 |
+
+### 8.11 制品返修申请
+
+| 字段名 | 中文名 | 类型 | 约束 | 影响业务 | 备注 |
+|--------|--------|------|------|----------|------|
+| applicationNo | 申请单号 | VARCHAR(50) | 必填 | 制品返修记录（关联申请） | 申请单唯一标识，格式如：RR-YYYYMMDD-XXXX |
+| sourceReceiptNo | 源收货单号 | VARCHAR(50) | 必填 | 制品返修记录（源物料来源）、原收货单状态更新 | 引用制品收货记录 |
+| materialCode | 物料编码 | VARCHAR(50) | 必填 | 制品返修记录（物料信息） | 引用物料主数据 |
+| applyQty | 返修数量 | DECIMAL(18,6) | 必填 | 制品返修记录（返修数量控制） | 本次申请返修的数量 |
+| reason | 返修原因 | VARCHAR(500) | 必填 | 审批判断、追溯分析 | 返修原因说明 |
+| status | 状态 | ENUM | 字典项 | 制品返修记录（生效才可执行） | 如：草稿、已提交、已审批、返修中、已完成、已取消 |
+| applyDate | 申请日期 | DATE | 必填 | 报表统计、时效分析 | 申请日期 |
+
+### 8.12 制品返修记录
+
+| 字段名 | 中文名 | 类型 | 约束 | 影响业务 | 备注 |
+|--------|--------|------|------|----------|------|
+| recordNo | 记录编号 | VARCHAR(50) | 必填 | 追溯查询、报表统计 | 记录唯一标识，格式如：RRR-YYYYMMDD-XXXX |
+| applicationNo | 申请单号 | VARCHAR(50) | 必填 | 追溯申请来源 | 引用制品返修申请 |
+| sourceReceiptNo | 源收货单号 | VARCHAR(50) | 必填 | 原收货单状态更新（标识返修中） | 引用制品收货记录 |
+| materialCode | 物料编码 | VARCHAR(50) | 必填 | 新收货记录（物料信息） | 引用物料主数据 |
+| repairQty | 返修数量 | DECIMAL(18,6) | 必填 | 原收货单状态更新、库存出库 | 移出正品库的返修数量 |
+| newReceiptQty | 新收货数量 | DECIMAL(18,6) | 必填 | 库存台账（正品入库数量） | 返修完成后重新入库的数量 |
+| warehouseCode | 仓库编码 | VARCHAR(50) | 必填 | 库存台账（正品入库仓库） | 返修后重新入库的仓库 |
+| repairDate | 返修日期 | DATE | 必填 | 报表统计、追溯 | 返修完成日期 |
+| status | 状态 | ENUM | 字典项 | 库存台账更新、报表统计 | 如：已受理、返修中、已收货、已完成 |
+
+### 8.13 制品上架申请
+
+| 字段名 | 中文名 | 类型 | 约束 | 影响业务 | 备注 |
+|--------|--------|------|------|----------|------|
+| applicationNo | 申请单号 | VARCHAR(50) | 必填 | 制品上架任务（关联申请）、制品上架记录（追溯） | 申请单唯一标识，格式如：SA-YYYYMMDD-XXXX |
+| sourceReceiptNo | 源收货单号 | VARCHAR(50) | 必填 | 制品上架任务（源物料来源）、源单据状态更新 | 引用隔离收货记录或退货记录 |
+| materialCode | 物料编码 | VARCHAR(50) | 必填 | 制品上架任务、库存台账 | 引用物料主数据 |
+| applyQty | 申请数量 | DECIMAL(18,6) | 必填 | 制品上架任务（任务数量上限） | 本次申请上架的数量 |
+| sourceWarehouse | 源仓库 | VARCHAR(50) | 必填 | 制品上架任务（拣货源） | 隔离库或退货仓 |
+| targetWarehouse | 目标仓库 | VARCHAR(50) | 必填 | 制品上架任务（上架目标）、库存台账 | 正品仓库 |
+| status | 状态 | ENUM | 字典项 | 制品上架任务（生效才可分配任务） | 如：草稿、已提交、已分配、已完成、已取消 |
+| applyDate | 申请日期 | DATE | 必填 | 报表统计、时效分析 | 申请日期 |
+
+### 8.14 制品上架任务
+
+| 字段名 | 中文名 | 类型 | 约束 | 影响业务 | 备注 |
+|--------|--------|------|------|----------|------|
+| taskNo | 任务编号 | VARCHAR(50) | 必填 | 制品上架记录（关联任务） | 任务唯一标识，格式如：SAT-YYYYMMDD-XXXX |
+| applicationNo | 申请单号 | VARCHAR(50) | 必填 | 追溯申请来源 | 引用制品上架申请 |
+| materialCode | 物料编码 | VARCHAR(50) | 必填 | 仓库作业、库存台账 | 引用物料主数据 |
+| taskQty | 任务数量 | DECIMAL(18,6) | 必填 | 制品上架记录（上架数量上限） | 本次任务要求上架的数量 |
+| sourceLocation | 源库位 | VARCHAR(50) | 必填 | 仓库作业（拣货库位） | 隔离区/退货区库位 |
+| targetLocation | 目标库位 | VARCHAR(50) | 必填 | 制品上架记录（入库库位） | 正品库位 |
+| assignee | 执行人 | VARCHAR(50) | 必填 | 任务指派、执行追溯 | 仓库作业员 |
+| status | 状态 | ENUM | 字典项 | 仓库作业调度 | 如：待指派、待执行、执行中、已完成、已取消 |
+
+### 8.15 制品上架记录
+
+| 字段名 | 中文名 | 类型 | 约束 | 影响业务 | 备注 |
+|--------|--------|------|------|----------|------|
+| recordNo | 记录编号 | VARCHAR(50) | 必填 | 追溯查询、报表统计 | 记录唯一标识，格式如：SAR-YYYYMMDD-XXXX |
+| applicationNo | 申请单号 | VARCHAR(50) | 必填 | 追溯申请来源 | 引用制品上架申请 |
+| taskNo | 任务编号 | VARCHAR(50) | 必填 | 追溯任务执行情况 | 引用制品上架任务 |
+| materialCode | 物料编码 | VARCHAR(50) | 必填 | 库存台账（入库物料） | 引用物料主数据 |
+| shelfQty | 上架数量 | DECIMAL(18,6) | 必填 | 库存台账（入库数量） | 实际上架数量 |
+| lotNo | 批次号 | VARCHAR(50) | 非必填 | 库存台账（批次管理）、追溯查询 | 沿用原批次或新生批次 |
+| shelfDate | 上架日期 | DATE | 必填 | 库存台账（入库时间）、报表统计 |实际上架日期 |
+| warehouseCode | 仓库编码 | VARCHAR(50) | 必填 | 库存台账（入库仓库-正品库） | 引用仓库主数据 |
+| locationCode | 库位编码 | VARCHAR(50) | 必填 | 库存台账（入库库位） | 正品库位 |
+| status | 状态 | ENUM | 字典项 | 源单据状态更新、报表统计 | 如：已上架、部分上架、已取消 |
+
+## 字段约束说明
+
+| 约束类型 | 说明 |
+|----------|------|
+| 字典项 | status（工单/申请/任务/记录各状态枚举）、lotNo（批次号规则）、receiptNo/recordNo（单据编号规则） |
+| 联动影响 | 制品收货申请 status=已完成 → 不可再新增收货任务；完工撤销执行后 → 原收货单 status 变更为已撤销，库存台账红字回冲；制品拆解执行后 → 源收货单关联数量减少，目标物料新增入库；制品返修执行后 → 原收货单标记返修中，返修完成后新收货记录替换；制品上架执行后 → 源单据（隔离收货记录/退货记录）状态更新，库存从源仓库转至目标仓库 |
+| 业务规则 | 收货数量不能超过工单剩余未交货数量；完工撤销数量不能超过原收货数量；拆解后目标物料数量按 BOM 换算；返修后新收货走正品收货流程；上架源单据必须处于可上架状态 |
