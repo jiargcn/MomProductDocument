@@ -355,3 +355,27 @@
 | 联动影响 | frozenQty > 0 → 该部分库存不可用于出库；isOverCapacity = true → 该库位不可接收新的入库；usageRate > usageRateWarning → 触发库位容量预警 |
 | 计算公式 | availableQty = qty - frozenQty；usageRate = currentQty / maxCapacity * 100%；remainingQty = expectedQty - receivedQty |
 | 追溯机制 | 每笔库存事务记录 beforeQty 和 afterQty，支持任意时刻的库存快照重建 |
+
+## 相关模块接口
+
+### 依赖模块
+
+| 模块 | 接口方向 | 说明 |
+|------|----------|------|
+| WMS_RECEIVING | [采购收货](../03-采购收货/index.md) | 采购入库增加库存余额 |
+| WMS_RETURN | [采购退货](../04-采购退货/index.md) | 退货出库扣减库存可用量 |
+| WMS_PUTAWAY | [采购上架](../05-采购上架/index.md) | 上架完成更新库位库存 |
+| WMS_PROD_RECEIVE | [生产收料](../07-生产收料/index.md) | 生产入库增加在库库存 |
+| WMS_PROD_MGMT | [生产管理](../08-生产管理/index.md) | 完工入库/返修/拆解更新库存 |
+| WMS_ISSUE | [发料管理](../06-发料管理/index.md) | 投料出库扣减线边库库存 |
+| WMS_SALES | [销售出库](../10-销售出库/index.md) | 销售出库扣减成品库存 |
+| WMS_INTERNAL | [库内作业](../11-库内作业/index.md) | 调拨/报废/转移调整库存 |
+| WMS_COUNT | [盘点管理](../12-盘点管理/index.md) | 盘点差异调整库存余额 |
+| QMS_INSPECTION | [质量检验](../../07-QMS-质量管理/index.md) | 质检结果触发库存质量状态变更 |
+
+### 被依赖模块
+
+| 模块 | 接口方向 | 说明 |
+|------|----------|------|
+| SCP_PURCHASE | [采购供应链](../../10-SCP-供应链平台/index.md) | 库存可用量作为订货参考 |
+| ERP_FINANCE | [ERP 财务](../../01-总体框架/architecture.md) | 库存价值数据同步至财务存货核算 |

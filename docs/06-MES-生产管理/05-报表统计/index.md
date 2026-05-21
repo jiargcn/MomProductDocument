@@ -219,3 +219,20 @@ flowchart TD
 | offDutyTime | 出线时间 | DateTime | 刷卡出线时刻 |
 | shiftId | 班次ID | String | 所属班次 |
 | status | 状态 | String | OnDuty/OffDuty/Abnormal |
+
+## 相关模块接口
+
+### 依赖模块
+
+| 模块 | 接口方向 | 说明 |
+|------|----------|------|
+| MES_PLANNING | [计划管理](../03-计划管理/index.md) | 工单执行数据作为报表统计来源 |
+| MES_ROUTING | [工艺管理](../02-工艺管理/index.md) | 工序数据用于报工/完工统计 |
+| MES_TRACE | [追溯管理](../04-追溯管理/index.md) | 追溯数据用于质量统计 |
+
+### 被依赖模块
+
+| 模块 | 接口方向 | 说明 |
+|------|----------|------|
+| QMS_REVIEW | [质量评审](../../07-QMS-质量管理/05-质量评审/index.md) | 生产统计报表作为质量评审依据 |
+| EAM_INSPECTION | [巡检保养](../../08-EAM-设备管理/05-巡检保养/index.md) | 设备点检数据纳入报表统计 |
