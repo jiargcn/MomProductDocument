@@ -1,0 +1,182 @@
+/* 全宽布局 */
+html .md-grid,
+:root .md-grid {
+  max-width: 100% !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+html .md-container,
+:root .md-container {
+  max-width: 100% !important;
+}
+
+html .md-main__inner,
+:root .md-main__inner {
+  max-width: 100% !important;
+}
+
+/* 侧边栏导航样式修复 */
+/* 一级导航项（总体框架、业务模型等）- 明确标识为分组标题 */
+html body .md-sidebar--primary li.md-nav__item--section > label.md-nav__link,
+html body .md-sidebar--primary li.md-nav__item--section > .md-nav__link {
+  color: #4051b5 !important;
+  font-weight: 700 !important;
+  cursor: default !important;
+}
+
+/* 子菜单链接 - 可点击跳转 */
+html body .md-sidebar--primary li.md-nav__item--nested > .md-nav__link {
+  color: rgba(0, 0, 0, 0.87) !important;
+}
+
+/* 悬浮效果 */
+.md-sidebar--primary .md-nav__link:hover {
+  background-color: var(--md-accent-faint);
+}
+
+/* 当前选中高亮 */
+.md-sidebar--primary .md-nav__link--active {
+  color: var(--md-accent-fg-color);
+  background-color: var(--md-accent-faint);
+}
+
+/* 当前选中项的父级导航高亮 */
+.md-sidebar--primary .md-nav__item--checked > .md-nav__link {
+  color: var(--md-accent-fg-color);
+  font-weight: bold;
+}
+
+/* 占位符标记 - 红色高亮 */
+/* 包含"待确认"、"待截图确认"、"待补充"的文本 */
+.md-typeset del,
+.md-typeset .del,
+.md-typeset del + *,
+.md-typeset .todo-label {
+  color: #d32f2f !important;
+  background-color: rgba(211, 47, 47, 0.1);
+  padding: 0.1em 0.3em;
+  border-radius: 0.2em;
+}
+
+/* 匹配所有包含占位符关键词的元素 */
+.md-typeset [class*="pending"],
+.md-typeset .待确认,
+.md-typeset .待补充,
+.md-typeset .待截图 {
+  color: #d32f2f !important;
+  font-weight: 500;
+}
+
+/* Mermaid 图表容器 - 弹窗功能 */
+.md-typeset .mermaid {
+  position: relative;
+  cursor: pointer;
+}
+
+/* 弹窗遮罩层 */
+.mermaid-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.9);
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+/* 弹窗打开状态 */
+.mermaid-modal.active {
+  display: flex;
+}
+
+/* 弹窗关闭按钮 */
+.mermaid-modal-close {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 44px;
+  height: 44px;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10001;
+  transition: background 0.2s;
+}
+
+.mermaid-modal-close:hover {
+  background: rgba(0, 0, 0, 0.9);
+}
+
+/* 弹窗内容区 - 全屏显示 */
+.mermaid-modal-content {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background: white;
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 弹窗内图表 - 全屏填充 */
+.mermaid-modal-body {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: auto;
+  padding: 60px 20px 80px 20px;
+}
+
+.mermaid-modal svg {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+}
+
+/* 缩放控制按钮 */
+.mermaid-zoom-controls {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  z-index: 10000;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 10px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.mermaid-zoom-btn {
+  width: 40px;
+  height: 40px;
+  background: var(--md-primary-fg-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mermaid-zoom-btn:hover {
+  background: var(--md-primary-fg-color--dark);
+}

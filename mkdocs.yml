@@ -1,4 +1,4 @@
-﻿# MOM 制造运营管理系统 - 产品文档
+# MOM 制造运营管理系统 - 产品文档
 site_name: MOM 产品文档手册
 site_description: MOM 制造运营管理系统产品文档
 
@@ -6,6 +6,7 @@ site_description: MOM 制造运营管理系统产品文档
 theme:
   name: material
   language: zh
+  custom_dir: overrides
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default
@@ -22,9 +23,7 @@ theme:
         icon: material/brightness-4
         name: 切换至亮色模式
   features:
-    - navigation.tabs          # 顶部标签导航
     - navigation.sections      # 侧边栏分节
-    - navigation.expand        # 展开侧边栏
     - navigation.top           # 返回顶部按钮
     - search.suggest           # 搜索建议
     - search.highlight         # 搜索高亮
@@ -45,39 +44,124 @@ nav:
     - 安全体系: 03-基础设施/security.md
     - 监控运维: 03-基础设施/monitoring.md
     - 报表管理: 03-基础设施/reporting.md
-  - 业务模块:
-    - DBC 主数据管理: 04-DBC-主数据管理/index.md
-    - WMS 库房管理: 05-WMS-库房管理/index.md
-    - MES 生产管理: 06-MES-生产管理/index.md
-    - QMS 质量管理: 07-QMS-质量管理/index.md
-    - EAM 设备管理: 08-EAM-设备管理/index.md
-    - ANDON 异常管理: 09-ANDON-异常管理/index.md
-    - 系统管理: 12-系统管理/index.md
-    - 数采管理: 11-数采管理/index.md
-    - SCP 供应链平台: 10-SCP-供应链平台/index.md
-    - PS 排程管理: 13-PS-排程管理/index.md
-  - API 参考: 14-API参考/index.md
-  - 版本路线图: 15-版本路线图/index.md
-
-# Markdown 扩展
-markdown_extensions:
-  - admonition               # 提示框
-  - pymdownx.details         # 可折叠内容
-  - pymdownx.superfences     # 嵌套代码块
-  - pymdownx.highlight       # 代码高亮
-  - pymdownx.inlinehilite    # 行内代码高亮
-  - pymdownx.tabbed          # 标签页
-  - pymdownx.tasklist        # 任务列表
-  - tables                   # 表格增强
-  - toc:
-      permalink: true        # 标题锚点链接
+  - DBC主数据管理:
+    - 物料管理:
+      - 物料基本信息: 04-DBC-主数据管理/01-物料管理/01-物料基本信息.md
+      - BOM: 04-DBC-主数据管理/01-物料管理/02-BOM.md
+      - 物料包装信息: 04-DBC-主数据管理/01-物料管理/03-物料包装信息.md
+      - 包装规格: 04-DBC-主数据管理/01-物料管理/04-包装规格.md
+      - 物料库区配置管理: 04-DBC-主数据管理/01-物料管理/05-物料库区配置管理.md
+    - 供应商管理:
+      - 供应商: 04-DBC-主数据管理/02-供应商管理/01-供应商.md
+      - 供应商物料: 04-DBC-主数据管理/02-供应商管理/02-供应商物料.md
+    - 客户管理:
+      - 客户: 04-DBC-主数据管理/03-客户管理/01-客户.md
+      - 客户月台: 04-DBC-主数据管理/03-客户管理/02-客户月台.md
+      - 客户物料: 04-DBC-主数据管理/03-客户管理/03-客户物料.md
+    - 工厂建模:
+      - 仓库管理: 04-DBC-主数据管理/04-工厂建模/01-仓库管理.md
+      - 库区管理: 04-DBC-主数据管理/04-工厂建模/02-库区管理.md
+      - 库位管理: 04-DBC-主数据管理/04-工厂建模/03-库位管理.md
+      - 库位组管理: 04-DBC-主数据管理/04-工厂建模/04-库位组管理.md
+      - 月台管理: 04-DBC-主数据管理/04-工厂建模/05-月台管理.md
+    - 策略设置:
+      - 班次管理: 04-DBC-主数据管理/05-策略设置/01-班次管理.md
+      - 班组管理: 04-DBC-主数据管理/05-策略设置/02-班组管理.md
+      - 业务类型: 04-DBC-主数据管理/05-策略设置/03-业务类型.md
+      - 单据设置: 04-DBC-主数据管理/05-策略设置/04-单据设置.md
+      - 单据开关: 04-DBC-主数据管理/05-策略设置/05-单据开关.md
+    - 物流配置:
+      - 货主: 04-DBC-主数据管理/06-物流配置/01-货主.md
+      - 承运商: 04-DBC-主数据管理/06-物流配置/02-承运商.md
+    - 设备管理:
+      - 工装台账管理: 04-DBC-主数据管理/07-设备管理/01-工装台账管理.md
+      - 设备台账管理: 04-DBC-主数据管理/07-设备管理/02-设备台账管理.md
+      - 生产商管理: 04-DBC-主数据管理/07-设备管理/03-生产商管理.md
+    - 工艺建模:
+      - 工序管理: 04-DBC-主数据管理/08-工艺建模/01-工序管理.md
+      - 工艺路线: 04-DBC-主数据管理/08-工艺建模/02-工艺路线.md
+      - 模具类型管理: 04-DBC-主数据管理/08-工艺建模/03-模具类型管理.md
+  - WMS库房管理:
+    - 基础数据: 05-WMS-库房管理/01-基础数据/index.md
+    - 系统设置: 05-WMS-库房管理/02-系统设置/index.md
+    - 采购收货: 05-WMS-库房管理/03-采购收货/index.md
+    - 采购退货: 05-WMS-库房管理/04-采购退货/index.md
+    - 采购上架: 05-WMS-库房管理/05-采购上架/index.md
+    - 发料管理: 05-WMS-库房管理/06-发料管理/index.md
+    - 生产收料: 05-WMS-库房管理/07-生产收料/index.md
+    - 生产管理: 05-WMS-库房管理/08-生产管理/index.md
+    - 库存管理: 05-WMS-库房管理/09-库存管理/index.md
+    - 销售出库: 05-WMS-库房管理/10-销售出库/index.md
+    - 库内作业: 05-WMS-库房管理/11-库内作业/index.md
+    - 盘点管理: 05-WMS-库房管理/12-盘点管理/index.md
+  - MES生产管理:
+    - 基础建模: 06-MES-生产管理/01-基础建模/index.md
+    - 工艺管理: 06-MES-生产管理/02-工艺管理/index.md
+    - 计划管理: 06-MES-生产管理/03-计划管理/index.md
+    - 追溯管理: 06-MES-生产管理/04-追溯管理/index.md
+    - 报表统计: 06-MES-生产管理/05-报表统计/index.md
+  - QMS质量管理:
+    - 检验配置: 07-QMS-质量管理/01-检验配置/index.md
+    - 来料检验: 07-QMS-质量管理/02-来料检验/index.md
+    - 生产检验: 07-QMS-质量管理/03-生产检验/index.md
+    - 客户检验: 07-QMS-质量管理/04-客户检验/index.md
+    - 质量评审: 07-QMS-质量管理/05-质量评审/index.md
+  - EAM设备管理:
+    - 基础数据: 08-EAM-设备管理/01-基础数据/index.md
+    - 设备管理: 08-EAM-设备管理/02-设备管理/index.md
+    - 备件管理: 08-EAM-设备管理/03-备件管理/index.md
+    - 工装管理: 08-EAM-设备管理/04-工装管理/index.md
+    - 巡检保养: 08-EAM-设备管理/05-巡检保养/index.md
+  - ANDON异常管理:
+    - 故障记录: 09-ANDON-异常管理/01-故障记录/index.md
+    - 问题响应: 09-ANDON-异常管理/02-问题响应/index.md
+  - SCP供应链平台:
+    - 供应链平台: 10-SCP-供应链平台/index.md
+  - PS排程管理:
+    - 排程管理: 11-PS-排程管理/index.md
+  - 数采管理:
+    - 采集点: 11-数采管理/01-采集点/index.md
+    - 设备管理: 11-数采管理/02-设备管理/index.md
+    - NodeRed: 11-数采管理/03-NodeRed/index.md
+  - 系统管理:
+    - 租户与认证: 12-系统管理/01-租户与认证/index.md
+    - 组织架构: 12-系统管理/02-组织架构/index.md
+    - 用户与权限: 12-系统管理/03-用户与权限/index.md
+    - 运维管理: 12-系统管理/04-运维管理/index.md
+    - 消息通知: 12-系统管理/05-消息通知/index.md
+    - 开发平台: 12-系统管理/06-开发平台/index.md
+  - API参考:
+    - API参考: 14-API参考/index.md
+  - 版本路线图:
+    - 版本路线图: 15-版本路线图/index.md
 
 # 插件
 plugins:
   - search:
-      lang: zh               # 中文搜索优化
+      lang: zh
+  - mermaid2
+  - offline
 
-# 仓库信息（待替换为实际 Git 地址）
+# Markdown 扩展
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.highlight
+  - pymdownx.inlinehilite
+  - pymdownx.tabbed
+  - pymdownx.tasklist
+  - tables
+  - toc:
+      permalink: true
+  - fenced_code
+
+# 扩展资源
+extra_css:
+  - stylesheets/extra.css
+extra_javascript:
+  - javascripts/extra.js
+
+# 仓库信息
 repo_url: ''
 repo_name: ''
 
