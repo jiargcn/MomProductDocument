@@ -8,15 +8,14 @@
 
 ```mermaid
 sequenceDiagram
-    participant采购 as 采购收货
-    participantWMS as WMS库房
-    participantQMS as 来料检验
-    participant仓库 as 仓库
+    participant 采购 as 采购收货
+    participant WMS as WMS库房
+    participant QMS as 来料检验
+    participant 仓库 as 仓库
 
     采购->>WMS: 采购收货完成
     WMS->>QMS: 触发来料检验申请（自动带出物料/批次/供应商）
-    QMS->>质检员: 质检员接单
-    质检员->>QMS: 执行抽检/全检，记录检验数据
+    QMS->>QMS: 质检员接单，执行抽检/全检，记录检验数据
     QMS->>QMS: AQL判定（根据AQL表判定批次是否接受）
     alt 合格
         QMS->>仓库: 合格→入库

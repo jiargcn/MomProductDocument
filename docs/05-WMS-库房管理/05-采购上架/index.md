@@ -18,12 +18,16 @@
 
 ```mermaid
 erDiagram
-    采购收货单 ||--o{ 上架申请 : "触发"
-    上架申请 ||--o{ 上架任务 : "生成"
-    上架任务 ||--o{ 上架记录 : "完成"
-    上架记录 ||--o{ 库存余额 : "更新"
+    PURCHASE_RECEIPT {
+        string id PK
+        string receipt_no "采购收货单号"
+        string material_id FK "物料"
+        string batch "批次号"
+        decimal qty "收货数量"
+        string status "状态"
+    }
 
-    上架申请 {
+    PUTAWAY_REQUEST {
         string id PK
         string source_no "来源单据号（采购收货单号）"
         string material_id FK "物料"
@@ -37,7 +41,7 @@ erDiagram
         datetime approve_time
     }
 
-    上架任务 {
+    PUTAWAY_TASK {
         string id PK
         string apply_id FK "关联上架申请"
         string material_id FK "物料"
@@ -51,7 +55,7 @@ erDiagram
         datetime operate_time
     }
 
-    上架记录 {
+    PUTAWAY_RECORD {
         string id PK
         string task_id FK "关联上架任务"
         string material_id FK "物料"
@@ -63,7 +67,7 @@ erDiagram
         datetime record_time
     }
 
-    库存余额 {
+    INVENTORY_BALANCE {
         string id PK
         string material_id FK "物料"
         string batch "批次号"
@@ -71,6 +75,11 @@ erDiagram
         decimal qty "当前余额"
         string owner_id "货主"
     }
+
+    PURCHASE_RECEIPT ||--o{ PUTAWAY_REQUEST : "触发"
+    PUTAWAY_REQUEST ||--o{ PUTAWAY_TASK : "生成"
+    PUTAWAY_TASK ||--o{ PUTAWAY_RECORD : "完成"
+    PUTAWAY_RECORD ||--o{ INVENTORY_BALANCE : "更新"
 ```
 
 ### 关键聚合

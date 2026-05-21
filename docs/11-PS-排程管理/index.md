@@ -39,15 +39,15 @@ flowchart TD
 
 ```mermaid
 erDiagram
-    排程场景 ||--o{ 执行生产排程 : "配置"
-    维护订单 ||--o{ 执行生产排程 : "生成排程"
-    执行生产排程 ||--o{ 排程结果对比 : "版本对比"
-    执行生产排程 ||--o{ 查询排程结果 : "结果查询"
-    执行生产排程 ||--o{ 生产计划查询 : "甘特图展示"
-    产能表 ||--o{ 执行生产排程 : "产能约束"
-    产品序列表 ||--o{ 产品序列物料对应表 : "关联"
-    产品序列物料对应表 ||--o{ 物料节拍 : "节拍定义"
-    排程场景 ||--o{ 排程结果对比 : "对比基准"
+    SCHEDULING_SCENARIO ||--o{ SCHEDULING_EXECUTION : "配置"
+    MAINTENANCE_ORDER ||--o{ SCHEDULING_EXECUTION : "生成排程"
+    SCHEDULING_EXECUTION ||--o{ RESULT_COMPARISON : "版本对比"
+    SCHEDULING_EXECUTION ||--o{ RESULT_QUERY : "结果查询"
+    SCHEDULING_EXECUTION ||--o{ PRODUCTION_PLAN_GANTT : "甘特图展示"
+    CAPACITY_TABLE ||--o{ SCHEDULING_EXECUTION : "产能约束"
+    PRODUCT_SEQUENCE ||--o{ SEQUENCE_MATERIAL : "关联"
+    SEQUENCE_MATERIAL ||--o{ MATERIAL_TAKT : "节拍定义"
+    SCHEDULING_SCENARIO ||--o{ RESULT_COMPARISON : "对比基准"
 ```
 
 ## 接口规范

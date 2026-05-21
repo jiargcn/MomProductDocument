@@ -8,8 +8,7 @@
 
 ```mermaid
 erDiagram
-    生产计划 ||--o{ 制品收货申请 : 下达
-    生产计划 {
+    PRODUCTION_PLAN {
         string workOrderNo "工单号"
         string materialCode "物料编码"
         decimal planQty "计划数量"
@@ -21,9 +20,7 @@ erDiagram
         string productionLine "产线"
     }
 
-    制品收货申请 ||--o{ 制品收货任务 : 分配
-    制品收货申请 ||--o{ 制品收货记录 : 确认
-    制品收货申请 {
+    PRODUCT_RECEIPT_REQUEST {
         string applicationNo "申请单号"
         string workOrderNo "工单号"
         string materialCode "物料编码"
@@ -35,7 +32,7 @@ erDiagram
         date applyDate "申请日期"
     }
 
-    制品收货任务 {
+    PRODUCT_RECEIPT_TASK {
         string taskNo "任务编号"
         string applicationNo "申请单号"
         string materialCode "物料编码"
@@ -46,7 +43,7 @@ erDiagram
         date assignDate "分配日期"
     }
 
-    制品收货记录 {
+    PRODUCT_RECEIPT_RECORD {
         string receiptNo "收货单号"
         string applicationNo "申请单号"
         string taskNo "任务编号"
@@ -60,8 +57,7 @@ erDiagram
         string status "状态"
     }
 
-    完工撤销记录 ||--o{ 制品收货记录 : 冲销
-    完工撤销记录 {
+    COMPLETION_REVOKE {
         string revokeNo "撤销单号"
         string workOrderNo "工单号"
         string receiptNo "原收货单号"
@@ -72,9 +68,7 @@ erDiagram
         string status "状态"
     }
 
-    隔离收货申请 ||--o{ 隔离收货任务 : 分配
-    隔离收货申请 ||--o{ 隔离收货记录 : 确认
-    隔离收货申请 {
+    HOLD_RECEIPT_REQUEST {
         string applicationNo "申请单号"
         string workOrderNo "工单号"
         string materialCode "物料编码"
@@ -85,7 +79,7 @@ erDiagram
         string status "状态"
     }
 
-    隔离收货任务 {
+    HOLD_RECEIPT_TASK {
         string taskNo "任务编号"
         string applicationNo "申请单号"
         string materialCode "物料编码"
@@ -95,7 +89,7 @@ erDiagram
         string status "状态"
     }
 
-    隔离收货记录 {
+    HOLD_RECEIPT_RECORD {
         string receiptNo "收货单号"
         string applicationNo "申请单号"
         string materialCode "物料编码"
@@ -108,8 +102,7 @@ erDiagram
         string holdReason "隔离原因"
     }
 
-    制品拆解申请 ||--o{ 制品拆解记录 : 执行
-    制品拆解申请 {
+    DISMANTLE_REQUEST {
         string applicationNo "申请单号"
         string sourceReceiptNo "源收货单号"
         string materialCode "物料编码"
@@ -119,7 +112,7 @@ erDiagram
         date applyDate "申请日期"
     }
 
-    制品拆解记录 {
+    DISMANTLE_RECORD {
         string recordNo "记录编号"
         string applicationNo "申请单号"
         string sourceReceiptNo "源收货单号"
@@ -132,8 +125,7 @@ erDiagram
         string status "状态"
     }
 
-    制品返修申请 ||--o{ 制品返修记录 : 执行
-    制品返修申请 {
+    REPAIR_REQUEST {
         string applicationNo "申请单号"
         string sourceReceiptNo "源收货单号"
         string materialCode "物料编码"
@@ -143,7 +135,7 @@ erDiagram
         date applyDate "申请日期"
     }
 
-    制品返修记录 {
+    REPAIR_RECORD {
         string recordNo "记录编号"
         string applicationNo "申请单号"
         string sourceReceiptNo "源收货单号"
@@ -155,9 +147,7 @@ erDiagram
         string status "状态"
     }
 
-    制品上架申请 ||--o{ 制品上架任务 : 分配
-    制品上架申请 ||--o{ 制品上架记录 : 确认
-    制品上架申请 {
+    PRODUCT_PUTAWAY_REQUEST {
         string applicationNo "申请单号"
         string sourceReceiptNo "源收货单号"
         string materialCode "物料编码"
@@ -168,7 +158,7 @@ erDiagram
         date applyDate "申请日期"
     }
 
-    制品上架任务 {
+    PRODUCT_PUTAWAY_TASK {
         string taskNo "任务编号"
         string applicationNo "申请单号"
         string materialCode "物料编码"
@@ -179,7 +169,7 @@ erDiagram
         string status "状态"
     }
 
-    制品上架记录 {
+    PRODUCT_PUTAWAY_RECORD {
         string recordNo "记录编号"
         string applicationNo "申请单号"
         string taskNo "任务编号"
@@ -191,6 +181,17 @@ erDiagram
         string locationCode "库位编码"
         string status "状态"
     }
+
+    PRODUCTION_PLAN ||--o{ PRODUCT_RECEIPT_REQUEST : "下达"
+    PRODUCT_RECEIPT_REQUEST ||--o{ PRODUCT_RECEIPT_TASK : "分配"
+    PRODUCT_RECEIPT_REQUEST ||--o{ PRODUCT_RECEIPT_RECORD : "确认"
+    COMPLETION_REVOKE ||--o{ PRODUCT_RECEIPT_RECORD : "冲销"
+    HOLD_RECEIPT_REQUEST ||--o{ HOLD_RECEIPT_TASK : "分配"
+    HOLD_RECEIPT_REQUEST ||--o{ HOLD_RECEIPT_RECORD : "确认"
+    DISMANTLE_REQUEST ||--o{ DISMANTLE_RECORD : "执行"
+    REPAIR_REQUEST ||--o{ REPAIR_RECORD : "执行"
+    PRODUCT_PUTAWAY_REQUEST ||--o{ PRODUCT_PUTAWAY_TASK : "分配"
+    PRODUCT_PUTAWAY_REQUEST ||--o{ PRODUCT_PUTAWAY_RECORD : "确认"
 ```
 
 ## 核心流程
