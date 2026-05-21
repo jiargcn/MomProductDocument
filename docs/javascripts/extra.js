@@ -51,26 +51,43 @@
   }
 })();
 
-/* 占位符标红功能 */
+/* 占位符标红功能 - 精确匹配 */
 (function() {
   function highlightPendingPlaceholders() {
-    var placeholderKeywords = ['待确认', '待截图确认', '待补充'];
+    // 精确匹配：只处理完全等于占位符关键词的元素
+    var placeholderPatterns = [
+      /^（待确认）$/,    // （待确认）
+      /^（待截图确认）$/, // （待截图确认）
+      /^（待补充）$/,     // （待补充）
+      /^\(待确认\)$/,    // (待确认)
+      /^\(待截图确认\)$/, // (待截图确认)
+      /^\(待补充\)$/     // (待补充)
+    ];
+
     var allElements = document.querySelectorAll('*');
 
     allElements.forEach(function(el) {
-      // Skip elements that are parents of other elements (avoid double-wrapping)
+      // Skip elements that have children (avoid double-wrapping)
       if (el.children.length > 0) return;
 
       var text = el.textContent || '';
-      for (var i = 0; i < placeholderKeywords.length; i++) {
-        if (text.includes(placeholderKeywords[i])) {
-          el.style.color = '#d32f2f';
-          el.style.backgroundColor = 'rgba(211, 47, 47, 0.1)';
-          el.style.padding = '0.1em 0.3em';
-          el.style.borderRadius = '0.2em';
-          el.style.fontWeight = '500';
+      var trimmedText = text.trim();
+
+      // Check if text exactly matches a placeholder pattern
+      var isPlaceholder = false;
+      for (var i = 0; i < placeholderPatterns.length; i++) {
+        if (placeholderPatterns[i].test(trimmedText)) {
+          isPlaceholder = true;
           break;
         }
+      }
+
+      if (isPlaceholder) {
+        el.style.color = '#d32f2f';
+        el.style.backgroundColor = 'rgba(211, 47, 47, 0.1)';
+        el.style.padding = '0.1em 0.3em';
+        el.style.borderRadius = '0.2em';
+        el.style.fontWeight = '500';
       }
     });
   }

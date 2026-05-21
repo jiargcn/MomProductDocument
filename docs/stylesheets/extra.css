@@ -47,24 +47,16 @@ html body .md-sidebar--primary li.md-nav__item--nested > .md-nav__link {
   font-weight: bold;
 }
 
-/* 占位符标记 - 红色高亮 */
-/* 包含"待确认"、"待截图确认"、"待补充"的文本 */
-.md-typeset del,
-.md-typeset .del,
-.md-typeset del + *,
-.md-typeset .todo-label {
+/* 占位符标记 - 红色高亮 - 仅精确匹配 */
+/* 这些选择器只匹配完全等于占位符关键词的情况 */
+.md-typeset .pending-placeholder,
+.md-typeset .待确认标签,
+.md-typeset .待截图标签,
+.md-typeset .待补充标签 {
   color: #d32f2f !important;
   background-color: rgba(211, 47, 47, 0.1);
   padding: 0.1em 0.3em;
   border-radius: 0.2em;
-}
-
-/* 匹配所有包含占位符关键词的元素 */
-.md-typeset [class*="pending"],
-.md-typeset .待确认,
-.md-typeset .待补充,
-.md-typeset .待截图 {
-  color: #d32f2f !important;
   font-weight: 500;
 }
 
