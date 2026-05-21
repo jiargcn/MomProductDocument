@@ -173,10 +173,10 @@ flowchart TD
 
 | 模块 | 接口方向 | 说明 |
 |------|----------|------|
-| WMS_RECEIVING | 采购收货 | 收货结果回传至SCP |
-| WMS_RETURN | 采购退货 | 退货结果回传至SCP |
-| SCP_PURCHASE_ORDER | 采购订单 | 订单状态关联 |
-| SCP_INVOICE | 发票结算 | 收货记录作为开票依据 |
+| WMS_RECEIVING | [采购收货](../../05-WMS-库房管理/03-采购收货/index.md) | 收货结果回传至SCP |
+| WMS_RETURN | [采购退货](../../05-WMS-库房管理/04-采购退货/index.md) | 退货结果回传至SCP |
+| SCP_PURCHASE_ORDER | [采购订单](../02-采购订单/index.md) | 订单状态关联 |
+| SCP_INVOICE | [发票结算](../07-发票结算/index.md) | 收货记录作为开票依据 |
 
 ## 版本历史
 

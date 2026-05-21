@@ -91,12 +91,12 @@ flowchart TD
 
 | 模块 | 接口方向 | 说明 |
 |------|----------|------|
-| PS_PRODUCT_SEQUENCE | 基础数据 | 获取产品序列信息 |
-| PS_SCENARIO | 基础数据 | 排程场景关联 |
-| DBC_PLANT | 工厂建模 | 获取工厂信息 |
-| DBC_BOM | BOM主数据 | 获取BOM版本信息 |
-| MES_PRODUCTION_ORDER | MES生产订单 | 可与MES生产订单关联 |
-| PS_SCHEDULING | 执行生产排程 | 排程执行输入 |
+| PS_PRODUCT_SEQUENCE | [基础数据](../01-基础数据/index.md) | 获取产品序列信息 |
+| PS_SCENARIO | [基础数据](../01-基础数据/index.md) | 排程场景关联 |
+| DBC_PLANT | [工厂建模](../../04-DBC-主数据管理/04-工厂建模/06-车间管理.md) | 获取工厂信息 |
+| DBC_BOM | [BOM主数据](../../04-DBC-主数据管理/01-物料管理/02-BOM.md) | 获取BOM版本信息 |
+| MES_PRODUCTION_ORDER | [MES生产订单](../../06-MES-生产管理/03-计划管理/index.md) | 可与MES生产订单关联 |
+| PS_SCHEDULING | [执行生产排程](../03-执行生产排程/index.md) | 排程执行输入 |
 
 ## 版本历史
 

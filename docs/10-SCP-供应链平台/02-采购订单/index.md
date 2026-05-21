@@ -107,11 +107,11 @@ flowchart TD
 
 | 模块 | 接口方向 | 说明 |
 |------|----------|------|
-| SCP_SUPPLIER | 基础数据 | 获取供应商信息 |
-| SCP_SUPPLIER_MATERIAL | 基础数据 | 获取供应商物料及价格 |
-| SCP_DELIVERY | 发货协同 | 确认后触发发货流程 |
-| SCP_INVOICE | 发票结算 | 到货后作为开票依据 |
-| ERP_PURCHASE | ERP采购 | 订单状态同步至ERP |
+| SCP_SUPPLIER | [基础数据](../01-基础数据/index.md) | 获取供应商信息 |
+| SCP_SUPPLIER_MATERIAL | [基础数据](../01-基础数据/index.md) | 获取供应商物料及价格 |
+| SCP_DELIVERY | [发货协同](../05-发货协同/index.md) | 确认后触发发货流程 |
+| SCP_INVOICE | [发票结算](../07-发票结算/index.md) | 到货后作为开票依据 |
+| ERP_PURCHASE | [ERP采购](../../01-总体框架/architecture.md) | 订单状态同步至ERP |
 
 ## 版本历史
 

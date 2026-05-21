@@ -100,9 +100,9 @@ flowchart TD
 
 | 模块 | 接口方向 | 说明 |
 |------|----------|------|
-| PS_SCHEDULING | 执行生产排程 | 获取排程版本和执行汇总 |
-| PS_RESULT_COMPARE | 排程结果对比 | 对比页钻取至明细 |
-| PS_PROD_PLAN_QUERY | 生产计划查询 | 明细数据可视化为甘特图 |
+| PS_SCHEDULING | [执行生产排程](../03-执行生产排程/index.md) | 获取排程版本和执行汇总 |
+| PS_RESULT_COMPARE | [排程结果对比](../04-排程结果对比/index.md) | 对比页钻取至明细 |
+| PS_PROD_PLAN_QUERY | [生产计划查询](../06-生产计划查询/index.md) | 明细数据可视化为甘特图 |
 
 ## 版本历史
 

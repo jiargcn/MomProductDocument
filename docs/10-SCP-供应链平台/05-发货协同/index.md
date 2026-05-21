@@ -172,9 +172,9 @@ flowchart TD
 
 | 模块 | 接口方向 | 说明 |
 |------|----------|------|
-| SCP_PURCHASE_ORDER | 采购订单 | 获取已确认订单作为发货依据 |
-| SCP_SUPPLIER | 基础数据 | 获取供应商信息 |
-| WMS_RECEIVING | 采购收货 | ASN同步，收货结果回传 |
+| SCP_PURCHASE_ORDER | [采购订单](../02-采购订单/index.md) | 获取已确认订单作为发货依据 |
+| SCP_SUPPLIER | [基础数据](../01-基础数据/index.md) | 获取供应商信息 |
+| WMS_RECEIVING | [采购收货](../../05-WMS-库房管理/03-采购收货/index.md) | ASN同步，收货结果回传 |
 | TMS_TRACKING | 运输管理 | 物流在途状态查询 |
 
 ## 版本历史

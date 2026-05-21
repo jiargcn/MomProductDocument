@@ -105,10 +105,10 @@ flowchart TD
 
 | 模块 | 接口方向 | 说明 |
 |------|----------|------|
-| PS_SCHEDULING | 执行生产排程 | 获取各版本排程汇总指标 |
-| PS_RESULT_QUERY | 查询排程结果 | 钻取明细数据 |
-| PS_PROD_PLAN_QUERY | 生产计划查询 | 发布后推送至甘特图 |
-| MES_PRODUCTION | 生产管理 | 发布的生产计划同步至MES |
+| PS_SCHEDULING | [执行生产排程](../03-执行生产排程/index.md) | 获取各版本排程汇总指标 |
+| PS_RESULT_QUERY | [查询排程结果](../05-查询排程结果/index.md) | 钻取明细数据 |
+| PS_PROD_PLAN_QUERY | [生产计划查询](../06-生产计划查询/index.md) | 发布后推送至甘特图 |
+| MES_PRODUCTION | [生产管理](../../06-MES-生产管理/index.md) | 发布的生产计划同步至MES |
 
 ## 版本历史
 

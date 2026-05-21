@@ -108,10 +108,10 @@ flowchart TD
 
 | 模块 | 接口方向 | 说明 |
 |------|----------|------|
-| SCP_DEMAND_FORECAST | 要货预测 | 已确认预测汇总输入 |
-| SCP_PURCHASE_ORDER | 采购订单 | 已发布计划转采购订单 |
-| DBC_MATERIAL | 物料主数据 | 获取物料信息 |
-| DBC_CUSTOMER | 客户主数据 | 获取客户信息 |
+| SCP_DEMAND_FORECAST | [要货预测](../03-要货预测/index.md) | 已确认预测汇总输入 |
+| SCP_PURCHASE_ORDER | [采购订单](../02-采购订单/index.md) | 已发布计划转采购订单 |
+| DBC_MATERIAL | [物料主数据](../../04-DBC-主数据管理/01-物料管理/01-物料基本信息.md) | 获取物料信息 |
+| DBC_CUSTOMER | [客户主数据](../../04-DBC-主数据管理/03-客户管理/01-客户.md) | 获取客户信息 |
 
 ## 版本历史
 

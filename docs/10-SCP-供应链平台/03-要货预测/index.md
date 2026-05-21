@@ -131,10 +131,10 @@ flowchart TD
 
 | 模块 | 接口方向 | 说明 |
 |------|----------|------|
-| DBC_MATERIAL | 物料主数据 | 获取物料编码、名称 |
-| SCP_FORECAST_PERIOD | 基础数据 | 获取预测周期配置 |
-| SCP_DEMAND_PLAN | 要货计划 | 已确认预测汇总至要货计划 |
-| ERP_FORECAST | ERP预测 | 预测数据同步至ERP |
+| DBC_MATERIAL | [物料主数据](../../04-DBC-主数据管理/01-物料管理/01-物料基本信息.md) | 获取物料编码、名称 |
+| SCP_FORECAST_PERIOD | [基础数据](../01-基础数据/index.md) | 获取预测周期配置 |
+| SCP_DEMAND_PLAN | [要货计划](../04-要货计划/index.md) | 已确认预测汇总至要货计划 |
+| ERP_FORECAST | [ERP预测](../../01-总体框架/architecture.md) | 预测数据同步至ERP |
 
 ## 版本历史
 

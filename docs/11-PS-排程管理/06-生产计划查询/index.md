@@ -111,10 +111,10 @@ flowchart TD
 
 | 模块 | 接口方向 | 说明 |
 |------|----------|------|
-| PS_RESULT_COMPARE | 排程结果对比 | 发布操作触发计划生成 |
-| PS_RESULT_QUERY | 查询排程结果 | 甘特图明细与排程结果一致 |
-| MES_PRODUCTION | MES 生产管理 | 计划同步至 MES 生产工单 |
-| MES_DISPATCH | MES 调度 | 生产计划作为车间调度依据 |
+| PS_RESULT_COMPARE | [排程结果对比](../04-排程结果对比/index.md) | 发布操作触发计划生成 |
+| PS_RESULT_QUERY | [查询排程结果](../05-查询排程结果/index.md) | 甘特图明细与排程结果一致 |
+| MES_PRODUCTION | [MES 生产管理](../../06-MES-生产管理/index.md) | 计划同步至 MES 生产工单 |
+| MES_DISPATCH | [MES 调度](../../06-MES-生产管理/index.md) | 生产计划作为车间调度依据 |
 
 ## 版本历史
 

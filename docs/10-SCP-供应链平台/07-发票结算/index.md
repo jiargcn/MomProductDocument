@@ -232,11 +232,11 @@ flowchart TD
 
 | 模块 | 接口方向 | 说明 |
 |------|----------|------|
-| SCP_PURCHASE_ORDER | 采购订单 | 获取订单及收货数据作为开票依据 |
-| SCP_SUPPLIER | 基础数据 | 获取供应商信息 |
-| WMS_RECEIVING | 采购收货 | 收货数量作为开票数量基准 |
-| WMS_RETURN | 采购退货 | 退货数量从开票数量中扣减 |
-| ERP_FINANCE | ERP财务 | 对账确认后同步至ERP应付模块 |
+| SCP_PURCHASE_ORDER | [采购订单](../02-采购订单/index.md) | 获取订单及收货数据作为开票依据 |
+| SCP_SUPPLIER | [基础数据](../01-基础数据/index.md) | 获取供应商信息 |
+| WMS_RECEIVING | [采购收货](../../05-WMS-库房管理/03-采购收货/index.md) | 收货数量作为开票数量基准 |
+| WMS_RETURN | [采购退货](../../05-WMS-库房管理/04-采购退货/index.md) | 退货数量从开票数量中扣减 |
+| ERP_FINANCE | [ERP财务](../../01-总体框架/architecture.md) | 对账确认后同步至ERP应付模块 |
 
 ## 版本历史
 

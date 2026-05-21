@@ -132,13 +132,13 @@ flowchart TD
 
 | 模块 | 接口方向 | 说明 |
 |------|----------|------|
-| PS_CAPACITY | 基础数据 | 获取产能表 |
-| PS_MATERIAL_TAKT | 基础数据 | 获取物料节拍 |
-| PS_SCENARIO | 基础数据 | 获取场景策略参数 |
-| PS_MAINTENANCE_ORDER | 维护订单 | 获取排程订单数据 |
-| PS_RESULT_COMPARE | 排程结果对比 | 输出排程结果供对比 |
-| PS_RESULT_QUERY | 查询排程结果 | 输出排程明细供查询 |
-| PS_PROD_PLAN_QUERY | 生产计划查询 | 输出甘特图数据 |
+| PS_CAPACITY | [基础数据](../01-基础数据/index.md) | 获取产能表 |
+| PS_MATERIAL_TAKT | [基础数据](../01-基础数据/index.md) | 获取物料节拍 |
+| PS_SCENARIO | [基础数据](../01-基础数据/index.md) | 获取场景策略参数 |
+| PS_MAINTENANCE_ORDER | [维护订单](../02-维护订单/index.md) | 获取排程订单数据 |
+| PS_RESULT_COMPARE | [排程结果对比](../04-排程结果对比/index.md) | 输出排程结果供对比 |
+| PS_RESULT_QUERY | [查询排程结果](../05-查询排程结果/index.md) | 输出排程明细供查询 |
+| PS_PROD_PLAN_QUERY | [生产计划查询](../06-生产计划查询/index.md) | 输出甘特图数据 |
 
 ## 版本历史
 
