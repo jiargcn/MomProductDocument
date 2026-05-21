@@ -2,7 +2,10 @@
   "permissions": {
     "allow": [
       "WebFetch(domain:192.168.1.67)",
-      "Skill(playwright-cli)"
+      "Skill(playwright-cli)",
+      "WebSearch",
+      "mcp__plugin_context7_context7__resolve-library-id",
+      "mcp__plugin_context7_context7__query-docs"
     ]
   }
 }
