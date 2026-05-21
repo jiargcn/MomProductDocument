@@ -87,7 +87,7 @@ flowchart TD
 
 | 字段名 | 中文名 | 类型 | 约束 | 影响业务 | 备注 |
 |--------|--------|------|------|----------|------|
-| order_no | 采购订单号 | VARCHAR(50) | 必填 | 关联采购订单 | |
+| order_no | 采购订单号 | VARCHAR(50) | 必填 | 关联[采购订单](../02-采购订单/index.md) | |
 | delivery_no | 发货单号 | VARCHAR(50) | 非必填 | 关联发货记录 | |
 | material_code | 物料编码 | VARCHAR(50) | 必填 | 物料标识 | |
 | material_name | 物料名称 | VARCHAR(200) | 显示 | | |
@@ -106,11 +106,11 @@ flowchart TD
 | 字段名 | 中文名 | 类型 | 约束 | 影响业务 | 备注 |
 |--------|--------|------|------|----------|------|
 | receipt_no | 收货单号 | VARCHAR(50) | PK | WMS 收货单号 | |
-| order_no | 采购订单号 | VARCHAR(50) | FK | 关联采购订单 | |
+| order_no | 采购订单号 | VARCHAR(50) | FK | 关联[采购订单](../02-采购订单/index.md) | |
 | delivery_no | 发货单号 | VARCHAR(50) | 非必填 | 关联发货记录 | |
 | material_code | 物料编码 | VARCHAR(50) | 必填 | 物料标识 | |
 | material_name | 物料名称 | VARCHAR(200) | 显示 | | |
-| receipt_qty | 收货数量 | DECIMAL(12,4) | 必填 | 发票结算依据 | |
+| receipt_qty | 收货数量 | DECIMAL(12,4) | 必填 | [发票结算](../07-发票结算/index.md)依据 | |
 | receipt_date | 收货日期 | DATE | 必填 | 对账周期判定 | |
 | warehouse_code | 收货仓库 | VARCHAR(50) | 显示 | 库存归属 | |
 | status | 状态 | ENUM | 字典项 | 对账可开票状态 | |
@@ -124,7 +124,7 @@ flowchart TD
 | 字段名 | 中文名 | 类型 | 约束 | 影响业务 | 备注 |
 |--------|--------|------|------|----------|------|
 | return_no | 退货单号 | VARCHAR(50) | PK | WMS 退货单号 | |
-| order_no | 采购订单号 | VARCHAR(50) | FK | 关联采购订单 | |
+| order_no | 采购订单号 | VARCHAR(50) | FK | 关联[采购订单](../02-采购订单/index.md) | |
 | receipt_no | 收货单号 | VARCHAR(50) | FK | 关联原收货记录 | |
 | material_code | 物料编码 | VARCHAR(50) | 必填 | 物料标识 | |
 | material_name | 物料名称 | VARCHAR(200) | 显示 | | |
@@ -136,7 +136,7 @@ flowchart TD
 ## 业务规则
 
 1. **超期预警**：预计到货日期 + 缓冲天数（可配置）后仍未收货，系统自动标记为超期并警告
-2. **收货数据来源**：采购收货记录和退货记录从 WMS 回传，SCP 侧为只读展示
+2. **收货数据来源**：[采购收货](../../05-WMS-库房管理/03-采购收货/index.md)记录和退货记录从 WMS 回传，SCP 侧为只读展示
 3. **未收货清零**：全部收货完成后，未收货记录自动移除
 4. **退货扣减**：退货数量从可开票收货数量中扣减
 

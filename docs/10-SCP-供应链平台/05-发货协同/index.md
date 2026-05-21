@@ -112,7 +112,7 @@ flowchart TD
 | delivery_date | 发货日期 | DATE | 必填 | 到货跟踪 | |
 | expected_arrival_date | 预计到货日期 | DATE | 非必填 | 采购方备货 | |
 | total_qty | 发货总数量 | DECIMAL(12,4) | 必填 | 到货核对 | |
-| status | 状态 | ENUM | 字典项 | 采购收货 | 待发货/已发货/部分到货/已完成 |
+| status | 状态 | ENUM | 字典项 | [采购收货](../../05-WMS-库房管理/03-采购收货/index.md) | 待发货/已发货/部分到货/已完成 |
 
 ### 2. 发货申请明细
 

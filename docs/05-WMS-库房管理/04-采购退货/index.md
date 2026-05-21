@@ -112,7 +112,7 @@ flowchart TD
 | returnQty      | 退货数量     | DECIMAL(18,6) | 必填     | 实际退货数量         | 以扫码确认为准                            |
 | unitPrice      | 单价         | DECIMAL(18,4) | 必填     | 财务核算依据         | 自动从采购价格单带出                      |
 | totalAmount    | 总金额       | DECIMAL(18,2) | 计算字段 | 退货金额统计         | returnQty × unitPrice                    |
-| receiptDocNo   | 收货单据号   | VARCHAR(50)   | 非必填   | 关联采购收货单据号   | 支持追溯原始收货单                        |
+| receiptDocNo   | 收货单据号   | VARCHAR(50)   | 非必填   | 关联[采购收货](../03-采购收货/index.md)单据号   | 支持追溯原始收货单                        |
 | returnDate     | 退货日期     | DATETIME      | 系统控制 | 退货时间追溯         | 任务完成时自动记录                        |
 | status         | 记录状态     | ENUM          | 系统控制 | 单据状态             | 字典值：已完成                            |
 

@@ -161,13 +161,13 @@ flowchart TD
 | 字段名 | 中文名 | 类型 | 约束 | 影响业务 | 备注 |
 |--------|--------|------|------|----------|------|
 | request_no | 申请单号 | VARCHAR(50) | 系统自动生成 | 用于唯一标识本次收货申请 | 格式: PR-YYYYMMDD-XXXX |
-| po_no | 采购订单号 | VARCHAR(50) | 必填, FK | 关联采购订单，获取供应商/物料信息 | 来源采购模块 |
-| supplier_code | 供应商代码 | VARCHAR(50) | 必填 | 确定送货方，影响后续供应商对账 | 来自供应商主数据 |
+| po_no | 采购订单号 | VARCHAR(50) | 必填, FK | 关联[采购订单](../../10-SCP-供应链平台/02-采购订单/index.md)，获取供应商/物料信息 | 来源采购模块 |
+| supplier_code | 供应商代码 | VARCHAR(50) | 必填 | 确定送货方，影响后续[供应商对账](../../10-SCP-供应链平台/07-发票结算/index.md) | 来自供应商主数据 |
 | order_type | 订单类型 | ENUM | 字典项 | 区分离散/标准采购等 | 离散/标准采购 |
 | material_code | 物料编码 | VARCHAR(50) | 必填 | 关联物料主数据 | |
 | material_name | 物料名称 | VARCHAR(200) | 显示 | 展示物料信息 | |
 | unit | 计量单位 | VARCHAR(20) | 显示 | 物料计量单位 | |
-| order_qty | 订单数量 | DECIMAL(12,3) | 必填 | 采购订单中的订购数量 | |
+| order_qty | 订单数量 | DECIMAL(12,3) | 必填 | [采购订单](../../10-SCP-供应链平台/02-采购订单/index.md)中的订购数量 | |
 | expected_date | 预计到货日期 | DATE | 必填 | 用于提前备货和任务调度 | |
 | status | 申请单状态 | ENUM | 系统定义 | 控制流程走向: 待审批/已审批/已取消 | |
 | tax_rate | 税率 | DECIMAL(5,2) | 显示 | 税率百分比 | |
@@ -184,12 +184,12 @@ flowchart TD
 |--------|--------|------|------|----------|------|
 | task_id | 任务ID | VARCHAR(50) | PK | 唯一标识一个收货任务 | |
 | request_no | 申请单号 | VARCHAR(50) | FK | 关联申请单信息 | |
-| po_no | 采购订单号 | VARCHAR(50) | 显示 | 关联采购订单 | |
+| po_no | 采购订单号 | VARCHAR(50) | 显示 | 关联[采购订单](../../10-SCP-供应链平台/02-采购订单/index.md) | |
 | supplier_code | 供应商代码 | VARCHAR(50) | 显示 | 展示供应商信息 | |
 | material_code | 物料编码 | VARCHAR(50) | 扫码获取 | 扫码枪扫描获取 | |
 | material_name | 物料名称 | VARCHAR(200) | 显示 | 展示物料信息 | |
 | unit | 计量单位 | VARCHAR(20) | 显示 | 物料计量单位 | |
-| order_qty | 订单数量 | DECIMAL(12,3) | 来自订单 | 采购订单中的订购数量 | |
+| order_qty | 订单数量 | DECIMAL(12,3) | 来自订单 | [采购订单](../../10-SCP-供应链平台/02-采购订单/index.md)中的订购数量 | |
 | expected_qty | 期望数量 | DECIMAL(12,3) | 计算 | order_qty - 已收货数量 | |
 | received_qty | 实收数量 | DECIMAL(12,3) | 必填 | 仓管员实际清点数量 | |
 | diff_qty | 差异数量 | DECIMAL(12,3) | 计算字段 | received_qty - expected_qty | 正值多收，负值少收 |
@@ -207,7 +207,7 @@ flowchart TD
 | 字段名 | 中文名 | 类型 | 约束 | 影响业务 | 备注 |
 |--------|--------|------|------|----------|------|
 | receipt_no | 收货单号 | VARCHAR(50) | PK | 唯一标识本次收货记录 | 格式: PR-YYYYMMDD-XXXX |
-| po_no | 采购订单号 | VARCHAR(50) | FK | 关联采购订单 | 来自采购模块 |
+| po_no | 采购订单号 | VARCHAR(50) | FK | 关联[采购订单](../../10-SCP-供应链平台/02-采购订单/index.md) | 来自采购模块 |
 | supplier_code | 供应商代码 | VARCHAR(50) | 必填 | 确定送货方 | 影响后续供应商对账 |
 | supplier_name | 供应商名称 | VARCHAR(200) | 显示 | 展示供应商信息 | (待截图确认) |
 | order_type | 订单类型 | ENUM | 字典项 | 区分离散/标准等订单 | 离散/标准等 |

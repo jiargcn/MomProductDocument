@@ -324,7 +324,7 @@
 | warehouseLocId | 库位ID | VARCHAR(50) | 必填 | 库存账务 | 引用库位主数据 |
 | actualQty | 实际出库数量 | DECIMAL(18,6) | 必填 | 库存账务递减 | 过账数量 |
 | inventoryTransId | 库存事务ID | VARCHAR(50) | 必填 | 账务追溯 | 关联库存账务记录 |
-| customerId | 客户ID | VARCHAR(50) | 必填 | 报表统计 | 收货方 |
+| customerId | 客户ID | VARCHAR(50) | 必填 | [报表统计](../../06-MES-生产管理/05-报表统计/index.md) | 收货方 |
 | carrierId | 承运商ID | VARCHAR(50) | 非必填 | 物流跟踪 | 承运商 |
 | vehicleNo | 车牌号 | VARCHAR(50) | 非必填 | 物流跟踪 | 车牌号 |
 | waybillNo | 运单号 | VARCHAR(50) | 非必填 | 物流跟踪 | 物流运单号 |
@@ -423,7 +423,7 @@
 | 字段名 | 中文名 | 类型 | 约束 | 影响业务 | 备注 |
 |--------|--------|------|------|----------|------|
 | inventoryTransId | 库存事务ID | VARCHAR(50) | 必填 | 财务追溯（唯一标识） | 库存账务记录的唯一标识 |
-| transType | 事务类型 | ENUM | 字典项 | 报表统计（SO_OUT-销售出库/RTN_IN-退货入库/STL_OUT-结算出库） | 区分不同出库类型 |
+| transType | 事务类型 | ENUM | 字典项 | [报表统计](../../06-MES-生产管理/05-报表统计/index.md)（SO_OUT-[销售出库](index.md)/RTN_IN-退货入库/STL_OUT-结算出库） | 区分不同出库类型 |
 | transQty | 事务数量 | DECIMAL(18,6) | 必填 | 库存计算 | 变动数量（正数入库/负数出库） |
 | materialId | 物料ID | VARCHAR(50) | 必填 | 库存关联 | 引用物料主数据 |
 | warehouseId | 仓库ID | VARCHAR(50) | 必填 | 库存关联 | 引用仓库主数据 |

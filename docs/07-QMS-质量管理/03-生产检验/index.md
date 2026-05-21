@@ -497,7 +497,7 @@ flowchart TD
 | WAIT_FIRST_INSP | 首件检验不合格 | FIRST_INSP_FAILED | MES 工单冻结 |
 | IN_PRODUCTION | 末件检验发起 | WAIT_LAST_INSP | - |
 | WAIT_LAST_INSP | 末件检验合格 | CLOSED | 允许完工入库 |
-| WAIT_LAST_INSP | 末件检验不合格 | QUALITY_EXCEPTION | 触发质量评审 |
+| WAIT_LAST_INSP | 末件检验不合格 | QUALITY_EXCEPTION | 触发[质量评审](../05-质量评审/index.md) |
 
 ### 权限控制规则
 
