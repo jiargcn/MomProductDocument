@@ -38,7 +38,7 @@
 | --- | --- |
 | 列表字段顺序 | 单据号、申请单号、状态、采购订单号、供应商代码、供应商名称、发货单号。 |
 | 查询字段 | 单据号、状态、供应商代码、发货单号。 |
-| 上游关联 | 主表保留 `requestNumber`，用于关联采购收货申请；任务创建时会创建以任务号为关联键的预计入库数据。 |
+| 上游关联 | 主表保留 `request_number`，用于关联采购收货申请；任务创建时会创建以任务号为关联键的预计入库数据。 |
 | 可配置执行限制 | 任务结构包含允许修改库位、数量、批次、包装号，允许多收、少收、重复扫码、扫描目标库位等开关。各开关的默认值、界面暴露方式和生效条件待测试验证。 |
 | 可用动作 | 新增、修改、删除、关闭、接单、放弃、拒收、撤销、任务配置更新、导入导出。 |
 
@@ -48,7 +48,7 @@
 | --- | --- |
 | 列表字段顺序 | 单据号、状态、申请单号、任务单号、采购订单号、供应商代码、供应商名称、发货单号。 |
 | 查询字段 | 单据号、采购订单号、供应商代码、发货单号。 |
-| 上游关联 | 主表同时保留 `requestNumber` 与 `jobNumber`，用于追溯申请和任务。 |
+| 上游关联 | 主表同时保留 `request_number` 与 `job_number`，用于追溯申请和任务。 |
 | 下游影响 | 记录服务创建库存事务；库存事务服务再更新库存余额。记录页还提供创建上架申请、检验申请、采购退货记录和撤销收货记录的入口。 |
 | 状态与接口线索 | 记录表包含状态、ERP 凭证号、ERP 推送标识、接口类型、入/出库事务类型等字段；这些字段的业务口径和接口回写规则待专项确认。 |
 
@@ -67,6 +67,33 @@
 | 记录 | `request_number`、`job_number` | `varchar(64)` | 否 | 上游申请、任务追溯键。 |
 | 记录 | `status` | `varchar(20)` | 是 | 默认值为 `1`；实际字典含义待测试验证。 |
 | 记录 | `erp_voucher_number` | `varchar(64)` | 否 | ERP 凭证号。 |
+
+### 5. 主明细字段分层（DDL/DO 已证实）
+
+> 字段技术名以 `request_purchasereceipt_*`、`job_purchasereceipt_*`、`record_purchasereceipt_*` 表和对应 DO 为准。后文历史草稿中的 `request_no`、`po_no`、`task_id`、`material_code`、`receipt_no` 等名称不再作为当前技术字段依据。
+
+| 层级 | 对象 | 真实表名 | 关键字段 |
+| --- | --- | --- | --- |
+| 申请主表 | 采购收货申请 | `request_purchasereceipt_main` | `number`、`status`、`business_type`、`supplier_code`、`asn_number`、`pp_number`、`po_number`、`po_type`、`source_type`、`fix_rate`、`business_detail` |
+| 申请明细 | 采购收货申请明细 | `request_purchasereceipt_detail` | `master_id`、`number`、`item_code`、`item_name`、`qty`、`uom`、`supplier_qty`、`supplier_uom`、`convert_rate`、`po_number`、`po_line`、`batch_id`、`package_number`、`pallet_number`、`inventory_status`、`location_code` |
+| 任务主表 | 采购收货任务 | `job_purchasereceipt_main` | `number`、`request_number`、`status`、`business_type`、`supplier_code`、`asn_number`、`po_number`、`source_type`、执行限制开关 |
+| 任务明细 | 采购收货任务明细 | `job_purchasereceipt_detail` | `master_id`、`number`、`item_code`、`qty`、`supplier_qty`、`convert_rate`、`po_number`、`po_line`、`batch_id`、`package_number`、`pallet_number`、`inventory_status`、`location_code` |
+| 记录主表 | 采购收货记录 | `record_purchasereceipt_main` | `number`、`request_number`、`job_number`、`business_type`、`supplier_code`、`asn_number`、`po_number`、`in_transaction_type`、`interface_type`、`erp_interface_pushed`、`erp_voucher_number`、`status` |
+| 记录明细 | 采购收货记录明细 | `record_purchasereceipt_detail` | `master_id`、`number`、`item_code`、`qty`、`supplier_qty`、`convert_rate`、`po_number`、`po_line`、`batch_id`、`package_number`、`pallet_number`、`inventory_status`、`location_code`、`receivable_qty`、`shortage_qty`、`putaway_request_number`、`inspect_result` |
+
+### 6. 库存挂接字段（DDL/DO 已证实）
+
+| 业务含义 | 申请明细 | 任务明细 | 记录明细 | 下游库存对象 |
+| --- | --- | --- | --- | --- |
+| 物料 | `item_code` | `item_code` | `item_code` | `transaction_expectin.item_code`、`transaction_transaction.item_code`、`transaction_balance.item_code` |
+| 批次 | `batch_id` | `batch_id` | `batch_id` | `batch_id` |
+| 托包装号 | `pallet_number` | `pallet_number` | `pallet_number` | `pallet_number` |
+| 箱包装号 | `package_number` | `package_number` | `package_number` | `package_number` |
+| 库存状态 | `inventory_status` | `inventory_status` | `inventory_status` | `inventory_status` |
+| 库位 | `location_code` | `location_code` | `location_code` | `location_code` |
+| 数量 | `qty` | `qty` | `qty` | 预计入、事务和余额的 `qty` |
+
+说明：预计入通过任务号 `job_number` 挂任务；库存事务通过记录号 `record_number` 挂记录；余额只保存数量结果和最后事务号 `last_trans_number`。
 
 ## 领域模型
 
@@ -393,5 +420,6 @@ flowchart TD
 
 | 版本 | 日期 | 修改说明 |
 |------|------|----------|
+| 1.2 | 2026-07-15 | 按 P0 字段证据底表补充真实表名、主明细字段分层和库存挂接字段。 |
 | 1.1 | 2026-07-15 | 新增基线取证和申请、任务、记录页面事实卡；原有未证实内容调整为待核验草稿。 |
 | 1.0 | 2026-05-19 | 初稿发布 |
