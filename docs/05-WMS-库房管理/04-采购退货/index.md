@@ -21,6 +21,48 @@
 | 终端操作 | 待确认 PDA/线边端是否存在采购退货执行入口。 | 终端菜单、路由、扫码页面和接口。 |
 | 图示与示例 | 保留流程图；待补库存扣减示例和异常退货样例。 | 测试数据、服务规则、业务确认。 |
 
+## 当前页面事实卡（第二轮源码已证实）
+
+> 以下内容覆盖当前实现的主干链路，并优先于本页后续历史草稿。历史草稿内的英文字段、审批状态、QMS 触发和财务回写尚未逐项校正，不得作为培训或接口依据。
+
+### 实体与关联键
+
+采购退货采用“申请主/明细 → 任务主/明细 → 记录主/明细”的实际表结构：`request_purchasereturn_*`、`job_purchasereturn_*`、`record_purchasereturn_*`。主表通过 `number` 表示本层单据号，任务主表保存 `request_number`，记录主表保存 `request_number` 与 `job_number`；三层还可保留 `purchase_receipt_record_number`、`asn_number`、`pp_number` 等来源追溯键。
+
+| 对象 | 当前已证实的业务字段 | 使用边界 |
+| --- | --- | --- |
+| 申请主表 | `number`、`purchase_receipt_record_number`、`asn_number`、`pp_number`、`supplier_code`、`request_time`、`due_time`、`return_source_type`、`return_order_number`、`erp_location_code`、`business_detail`。 | 是退货业务意图和来源信息的承载体；`return_source_type` 说明同一模型兼容采购、维修备件、M 类型采购退货。 |
+| 申请明细 | 继承物料、批次、库存状态、库位、数量等通用申请明细字段，并有 `reason`、`reason_type`、`po_number`、`po_line`、`pallet_unit`、`pallet_std_qty`、`produce_date`。 | 退货可用库存的查询按物料、批次、库存状态、来源库位等维度组织。 |
+| 任务主表 | `request_number`、`status`、`accept_user_id/name/time`、`complete_user_id/name/time`，以及是否允许改库位、数量、批次、箱码、重复扫描和扫描目标库位等策略字段。 | 现场执行控制在任务层；Web 和 PDA 均有任务执行入口。 |
+| 记录主表 | `request_number`、`job_number`、`purchase_receipt_record_number`、`execute_time`、`active_date`、`number`、`business_type`。 | 记录层保留实际执行后的追溯信息。 |
+
+### 已证实的单据与库存链路
+
+```mermaid
+flowchart LR
+  R["采购退货申请"] -->|状态进入 HANDLING| J["生成采购退货任务"]
+  J -->|Web / PDA 执行| T["创建库存事务"]
+  T --> B["库存余额更新\n复用库存事务服务"]
+  J -->|执行完成| E["删除该任务号的预计出"]
+```
+
+1. 申请保存后，状态为 `HANDLING` 时生成采购退货任务。
+2. 任务执行服务调用 `transactionService.createTransaction(...)` 创建库存事务；库存事务对库存余额的更新遵循[库存数据挂接模型](../../02-业务模型/02-库存数据挂接模型.md)的统一规则。
+3. 执行后服务会按任务单号删除预计出记录；趋势日志记录“执行了采购退货任务”。
+4. Web 任务页存在“承接”动作；PDA 具备采购退货任务、明细、扫码组件和记录页面。具体状态码、扫码校验和按钮权限仍需单独取证。
+
+### 当前重要待确认项
+
+| 编号 | 发现 | 当前处理 |
+| --- | --- | --- |
+| PRT-INV-001 | 生成任务时构造预计出数据的调用在当前 `PurchasereturnRequestMainService` 中被注释，不能据此说明“申请/任务一定创建预计出”。 | 登记总账；页面只保留“执行时删除同任务预计出”的已证实事实。 |
+| PRT-RULE-001 | 历史草稿宣称 QMS 不合格、数量超收、审批通过等为统一前置条件，但本轮未逐项验证。 | 不作为当前规则；后续按状态枚举、按钮与测试环境回填。 |
+| PRT-IF-001 | 代码存在外部消息、ERP 库位/凭证、采购订单相关字段，但实际同步时点、幂等与失败补偿尚未完成取证。 | 保留接口占位，继续其它 WMS 页面。 |
+
+## 历史草稿校正说明
+
+本页下方早期段落使用 `returnApplyNo`、`returnQty`、`relatedReceiptNo` 等推导字段，并写入了固定的审批状态、QMS 触发、ERP 凭证和退货数量规则。它们与当前 `request_purchasereturn_*`、`job_purchasereturn_*`、`record_purchasereturn_*` 模型并非一一对应，现降级为待校正草稿；后续页面回填应以本节事实卡为起点。
+
 ## 领域模型
 
 ### 实体关系图
