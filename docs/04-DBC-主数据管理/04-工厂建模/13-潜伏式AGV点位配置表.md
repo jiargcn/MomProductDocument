@@ -7,7 +7,7 @@
 
 持久化表为 `basic_latent_agv_point`。当前模型维护 `pointCodeConfig`（配置点位）、`pointCode`（点位代码）、`type`、`priority`、有效期和备注；历史草稿中的名称、库位、坐标、朝向、可用状态不是当前对象字段。
 
-服务和导入的既有记录查找使用 `pointCode + pointCodeConfig + type`，但新增/编辑的查重方法把传入的配置点位条件写到旧字段 `port_code`，而当前表使用非空 `point_code_config`，`port_code` 为可空旧列。DDL 亦未设复合唯一约束。详见[产品差距总账](../../15-版本路线图/产品差距总账.md) GAP-058。
+服务和导入的既有记录查找使用 `pointCode + pointCodeConfig + type`，但新增/编辑的查重方法把传入的配置点位条件写到旧字段 `port_code`，而当前表使用非空 `point_code_config`，`port_code` 为可空旧列。DDL 亦未设复合唯一约束。详见[产品差距总账](../../15-版本路线图/03-问题与待确认/产品差距总账.md) GAP-058。
 
 ## 字段与新增约束
 
