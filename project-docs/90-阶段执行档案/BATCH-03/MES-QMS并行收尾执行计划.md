@@ -261,10 +261,10 @@ flowchart TB
 
 ## 7. 检查清单（波次 D 关门）
 
+- [x] MES 过期互链已修；待确认已入账（Track-M：`MES-BASE`～`MES-TERM`、`GAP-071`；P2 清单已建）
 - [ ] QMS 5 组均有维护参考且在 `mkdocs.yml`
 - [ ] `字段证据/QMS/` 含：事实层总览 + 5 分组证据
 - [ ] QMS `index.md` 宣布齐套并给学习顺序
-- [ ] MES 过期互链已修；待确认已入账
 - [ ] `mkdocs build` 通过
 - [ ] BATCH-03 占位清单、总任务清单、交接已更新
 - [ ] 本地提交完成；推送等待授权
