@@ -8,3 +8,4 @@ __pycache__/
 sourcecode/
 reference/
 dist/
+temp/
