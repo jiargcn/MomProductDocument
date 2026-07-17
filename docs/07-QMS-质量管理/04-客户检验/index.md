@@ -1,202 +1,67 @@
 # 客户检验
 
-## 概述
+> 适用基线：测试环境目标 / `dev` 分支 / 2026-07-15。
+> 阅读对象：OQC/客退质量、仓储退货协同；操作见[客户检验-维护与查询参考](客户检验-维护与查询参考.md)。
 
-客户检验是 QMS 质量管理系统的核心模块之一，用于对客户退回的产品进行检验评估。当客户因质量问题或其他原因退货时，系统支持从退货接收、检验任务分配到最终判定的全流程管理，确保每笔退货均可追溯至原始发货批次。
+## 业务目的与适用范围
 
-客户检验模块包含三个核心子流程：
+本分组菜单名称为**客户退回检验**（申请/任务/记录），用于客户退货入库后的质量确认，不是「出货 OQC」专页。检验类型枚举虽存在发货检验、客户发货检验等码，但 QMS 菜单未提供对应独立 ATR；出货质量协同应联查销售出库/SCP，勿在本页杜撰出货放行流程。
 
-- **客户退回检验申请** - 记录退货基本信息，系统自动带出原发货单、批次及客户信息
-- **客户退回检验任务** - 质检员接单后按检验方案执行检验，区分外观/功能/包装等不合格类型
-- **客户退回检验记录** - 记录最终判定结果，合格品可重新入库，不合格品进入隔离/报废/退供应商流程
+退货仓储主链见 WMS 销售出库/客户退货相关页；供应链协同见 SCP。
 
-## 领域模型
+## 如何使用本组文档
 
-```mermaid
-erDiagram
-    CustomerReturnApply ||--o{ CustomerReturnTask : "生成"
-    CustomerReturnTask ||--o| CustomerReturnRecord : "衍生"
-    CustomerReturnApply {
-        string applyId PK "申请编号"
-        string originalShipmentId "原发货单号"
-        string customerId "客户ID"
-        string customerName "客户名称"
-        string returnReason "退货原因"
-        string returnReasonType "退货原因类型"
-        string batchNo "批次号"
-        string productId "产品ID"
-        string productName "产品名称"
-        string quantity "退货数量"
-        string applyStatus "申请状态"
-        string applyTime "申请时间"
-        string applicant "申请人"
-    }
-    CustomerReturnTask {
-        string taskId PK "任务编号"
-        string applyId FK "申请编号"
-        string inspectorId "质检员ID"
-        string inspectorName "质检员名称"
-        string inspectionPlanId "检验方案ID"
-        string inspectionType "检验类型"
-        string taskStatus "任务状态"
-        string assignedTime "分配时间"
-        string completedTime "完成时间"
-        string externalResult "外观检验结果"
-        string functionResult "功能检验结果"
-        string packageResult "包装检验结果"
-    }
-    CustomerReturnRecord {
-        string recordId PK "记录编号"
-        string taskId FK "任务编号"
-        string applyId FK "申请编号"
-        string finalResult "最终判定结果"
-        string unqualifiedType "不合格类型"
-        string disposalMethod "处置方式"
-        string storageLocation "存放库位"
-        string recordTime "记录时间"
-        string remark "备注"
-        string productionDate "生产日期"
-        string workorderId "工序ID"
-        string materialBatchNo "物料批次号"
-    }
-```
+| 你的目的 | 建议阅读 |
+| --- | --- |
+| 想理解客退如何进质量 | 本页。 |
+| 正在处理客退检验单 | [客户检验-维护与查询参考](客户检验-维护与查询参考.md)。 |
+| 出货/发运问题 | WMS 销售出库；勿默认本页。 |
 
-### 实体说明
+## 使用前准备
 
-| 实体 | 说明 | 生命周期 |
-|------|------|----------|
-| CustomerReturnApply | 客户退回检验申请，记录退货信息的起点 | 创建后不可修改，仅作状态流转 |
-| CustomerReturnTask | 客户退回检验任务，由申请触发生成 | 可多次退回重检 |
-| CustomerReturnRecord | 客户退回检验记录，检验的最终结果 | 一旦判定不可变更 |
+| 需要确认什么 | 为什么重要 |
+| --- | --- |
+| 客户退货记录及规则开关 | 退货记录创建后，可按「创建后建检验申请」规则触发。 |
+| 客户退回检验方案 | 类型为客户退货检验。 |
+| 包装、批次、来源销售订单线索 | 追溯；注意部分字段在建单时可能被置空（以服务实现为准）。 |
+| 寄售退货/发货调整等旁路 | 亦可能建检验，类型与菜单过滤需联查。 |
 
-## 核心流程
+【截图占位：客户退回检验申请（客户/物料/数量）。】
 
-### 流程图
+## 一笔客户退回检验如何完成
 
 ```mermaid
-flowchart TD
-    A["客户退货接收"] --> B{"系统自动带出信息"}
-    B --> C["创建客户退回检验申请"]
-    C --> D["提交申请"]
-    D --> E["管理员审核"]
-    E --> F{"审核通过?"}
-    F -->|是| G["生成客户退回检验任务"]
-    F -->|否| H["退回补正"]
-    G --> I["质检员接单"]
-    I --> J{"按检验方案执行检验"}
-    J --> K{"外观检验"}
-    J --> L{"功能检验"}
-    J --> M{"包装检验"}
-    K --> N{"检验结果"}
-    L --> N
-    M --> N
-    N --> O{"合格?"}
-    O -->|是| P["合格→正品入库"]
-    O -->|否| Q["不合格→隔离/报废/退供应商"]
-    P --> R["生成客户退回检验记录"]
-    Q --> R
-    R --> S["关联追溯原发货批次"]
-    S --> T["生产日期/工序/物料批次"]
+flowchart LR
+    A["WMS 客户退货记录\n（规则开关开启）"] --> B["客户退回检验申请"]
+    B --> C["任务执行"]
+    C --> D["检验记录与结论"]
+    D --> E["可选：评审 / 通知单"]
+    D --> F["库存后续在 WMS"]
 ```
 
-### 流程说明
+也可在 QMS 菜单手工建申请。通用 ATR 状态与判定口径同来料（申请九态、任务四态；接收/拒绝；使用决策四类）。
 
-| 步骤 | 环节 | 说明 |
-|------|------|------|
-| 1 | 客户退货接收 | 客户将产品退回至仓库，仓库人员确认收货 |
-| 2 | 创建申请 | 系统自动带出原发货单号、批次号、客户信息，生成客户退回检验申请 |
-| 3 | 任务生成 | 申请审核通过后，根据检验方案自动生成检验任务 |
-| 4 | 执行检验 | 质检员按方案执行外观、功能、包装等维度的检验 |
-| 5 | 判定处置 | 合格品入正品库；不合格品进入隔离/报废/退供应商流程 |
-| 6 | 关联追溯 | 记录关联原发货批次的生产日期、工序、物料批次信息 |
+## 与销售 / SCP / WMS 的边界
 
-## 字段说明
+| 协同方 | 本页负责 | 不在本页展开 |
+| --- | --- | --- |
+| WMS 客户退货 | 消费建单触发；质量结论 | 退货收货库存事务、库位 |
+| WMS 销售出库 | — | 出货拣配与发运 |
+| SCP | 客诉/发货协同线索 | 采购预测与结算 |
+| 质量评审 / Q1 | 客退不合格出口 | 索赔金额规则细节 |
 
-### 客户退回检验申请 (CustomerReturnApply)
+## 关键判断
 
-| 字段名 | 中文名 | 类型 | 说明 | 示例 |
-|--------|--------|------|------|------|
-| applyId | 申请编号 | string | (待截图确认) | CRA-20260520-001 |
-| originalShipmentId | 原发货单号 | string | (待截图确认) | SH-20260501-001 |
-| customerId | 客户ID | string | (待截图确认) | C-001 |
-| customerName | 客户名称 | string | (待截图确认) | 某某汽车 |
-| returnReason | 退货原因 | string | (待截图确认) | |
-| returnReasonType | 退货原因类型 | string | (待截图确认) | 外观损坏/功能异常/包装破损/其他 |
-| batchNo | 批次号 | string | (待截图确认) | B-20260501 |
-| productId | 产品ID | string | (待截图确认) | P-001 |
-| productName | 产品名称 | string | (待截图确认) | 电机总成 |
-| quantity | 退货数量 | string | (待截图确认) | 10 |
-| applyStatus | 申请状态 | string | (待截图确认) | 待审核/已通过/已驳回 |
-| applyTime | 申请时间 | string | (待截图确认) | 2026-05-20 10:00 |
-| applicant | 申请人 | string | (待截图确认) | 张三 |
+| 判断点 | 应先确认什么 | 影响 |
+| --- | --- |
+| 退货后无检验单 | 规则开关、是否重复回调号、方案 | 避免重复建单或漏建 |
+| 是否做出货检验 | 有无独立菜单/类型使用证据 | 无则不培训为 OQC |
+| 结论后库存怎么变 | WMS 退货后续与隔离/报废 | QMS 不直接改余额 |
 
-### 客户退回检验任务 (CustomerReturnTask)
+## 限制与待确认
 
-| 字段名 | 中文名 | 类型 | 说明 | 示例 |
-|--------|--------|------|------|------|
-| taskId | 任务编号 | string | (待截图确认) | CRT-20260520-001 |
-| applyId | 申请编号 | string | (待截图确认) | CRA-20260520-001 |
-| inspectorId | 质检员ID | string | (待截图确认) | I-001 |
-| inspectorName | 质检员名称 | string | (待截图确认) | 李四 |
-| inspectionPlanId | 检验方案ID | string | (待截图确认) | IP-001 |
-| inspectionType | 检验类型 | string | (待截图确认) | 来料检验/过程检验/出货检验 |
-| taskStatus | 任务状态 | string | (待截图确认) | 待接单/进行中/已完成/已取消 |
-| assignedTime | 分配时间 | string | (待截图确认) | 2026-05-20 10:30 |
-| completedTime | 完成时间 | string | (待截图确认) | 2026-05-20 14:00 |
-| externalResult | 外观检验结果 | string | (待截图确认) | 合格/不合格 |
-| functionResult | 功能检验结果 | string | (待截图确认) | 合格/不合格 |
-| packageResult | 包装检验结果 | string | (待截图确认) | 合格/不合格 |
+- 枚举含发货检验等类型，缺菜单不等于能力不存在，但培训不得写成已交付出货检验页。
+- 寄售退货、发货调整建单与本菜单过滤关系待环境样例。
+- 客户退货建单时部分参考订单字段被置空的业务意图待产品确认。
 
-### 客户退回检验记录 (CustomerReturnRecord)
-
-| 字段名 | 中文名 | 类型 | 说明 | 示例 |
-|--------|--------|------|------|------|
-| recordId | 记录编号 | string | (待截图确认) | CRR-20260520-001 |
-| taskId | 任务编号 | string | (待截图确认) | CRT-20260520-001 |
-| applyId | 申请编号 | string | (待截图确认) | CRA-20260520-001 |
-| finalResult | 最终判定结果 | string | (待截图确认) | 合格/不合格 |
-| unqualifiedType | 不合格类型 | string | (待截图确认) | 外观/功能/包装 |
-| disposalMethod | 处置方式 | string | (待截图确认) | 隔离/报废/退供应商 |
-| storageLocation | 存放库位 | string | (待截图确认) | QC-Q-001 |
-| recordTime | 记录时间 | string | (待截图确认) | 2026-05-20 15:00 |
-| remark | 备注 | string | (待截图确认) | |
-| productionDate | 生产日期 | string | (待截图确认) | 2026-04-15 |
-| workorderId | 工序ID | string | (待截图确认) | WO-001 |
-| materialBatchNo | 物料批次号 | string | (待截图确认) | MB-20260415-001 |
-
-## 相关模块接口
-
-### 依赖模块
-
-| 模块 | 接口方向 | 说明 |
-|------|----------|------|
-| WMS_SALES | [销售出库](../../05-WMS-库房管理/10-销售出库/index.md) | 获取原发货单号和批次信息 |
-| QMS_CONFIG | [检验配置](../01-检验配置/index.md) | 获取退回检验方案和判定标准 |
-| DBC_MATERIAL | [物料主数据](../../04-DBC-主数据管理/01-物料管理/01-物料基本信息.md) | 获取产品物料属性 |
-| DBC_CUSTOMER | [客户主数据](../../04-DBC-主数据管理/03-客户管理/01-客户.md) | 获取客户信息 |
-
-### 被依赖模块
-
-| 模块 | 接口方向 | 说明 |
-|------|----------|------|
-| WMS_INVENTORY | [库存管理](../../05-WMS-库房管理/09-库存管理/index.md) | 合格品重新入库、不合格品隔离 |
-| WMS_RETURN | [采购退货](../../05-WMS-库房管理/04-采购退货/index.md) | 不合格品退供应商处理 |
-| SCP_SUPPLIER | [供应商](../../10-SCP-供应链平台/01-基础数据/index.md) | 退货结果反馈供应商绩效 |
-
-## 关联追溯
-
-客户退回检验记录通过以下字段实现对原发货批次的全链路追溯：
-
-| 追溯字段 | 说明 | 用途 |
-|----------|------|------|
-| productionDate | 生产日期 | 定位产品生产时间节点 |
-| workorderId | 工序ID | 追溯生产过程中的加工工序 |
-| materialBatchNo | 物料批次号 | 追溯原材料批次，定位供应链问题 |
-
-追溯链路示例：
-
-```
-客户退货 → 客户退回检验申请 → 原发货单号 → 批次号
-  → 批次关联的生产日期、工序ID、物料批次号
-  → 定位问题根源：是生产环节还是物料问题
-```
+【示例数据占位：客户退货 20 件 → 检验申请 → 拒收 → 转评审。】
