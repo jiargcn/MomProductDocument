@@ -1,185 +1,63 @@
 # 采购跟踪
 
-## 概述
+> 适用基线：测试环境目标 / `dev` 分支 / 2026-07-15。
+> 阅读对象：采购跟单、供应商查询；操作见[采购跟踪-维护与查询参考](采购跟踪-维护与查询参考.md)。
 
-采购跟踪是 SCP 供应链平台的到货状态监控模块，覆盖未收货记录、已收货记录和退货记录三大维度。采购方通过此模块实时掌握每笔采购订单的到货进度，供应商侧也可查看自身的发货到货状态。
+## 业务目的与适用范围
 
-## 领域模型
+采购跟踪面向「发货之后到入库/退货」的进度可视：SCP 侧存在采购收货申请/任务/记录、退货对应对象、短缺明细，以及上架、检验等迁移页面。**库存变动与库内执行以 WMS 为准**；SCP 收货服务中仍有依赖 WMS 基础设施未迁完的 TODO（如部分退货/检验/上架创建），培训勿承诺 SCP 页可独立完成全部仓内闭环。
 
-```mermaid
-erDiagram
-    UNRECEIVED_RECORD {
-        int id PK "主键ID"
-        string order_no "采购订单号"
-        string delivery_no "发货单号"
-        string material_code "物料编码"
-        decimal shipped_qty "已发货数量"
-        decimal unreceived_qty "未收货数量"
-        date expected_date "预计到货日期"
-        int overdue_days "超期天数"
-    }
+未收货视角可由发货记录「未取/已取」统计与订单/计划未收数量共同观察，而非单独虚构表。
 
-    RECEIPT_RECORD {
-        int receipt_id PK "收货记录ID"
-        string receipt_no "收货单号"
-        string order_no "采购订单号"
-        string delivery_no "发货单号"
-        string material_code "物料编码"
-        decimal receipt_qty "收货数量"
-        date receipt_date "收货日期"
-        string warehouse_code "收货仓库"
-        string status "状态"
-    }
+## 如何使用本组文档
 
-    RETURN_RECORD {
-        int return_id PK "退货记录ID"
-        string return_no "退货单号"
-        string order_no "采购订单号"
-        string receipt_no "收货单号"
-        string material_code "物料编码"
-        decimal return_qty "退货数量"
-        string return_reason "退货原因"
-        date return_date "退货日期"
-        string status "状态"
-    }
+| 你的目的 | 建议阅读 |
+| --- | --- |
+| 想理解跟踪与仓内收货关系 | 本页。 |
+| 正在查收货/退货/短缺 | [采购跟踪-维护与查询参考](采购跟踪-维护与查询参考.md)。 |
+| 仓库现场收货 | WMS [采购收货](../../05-WMS-库房管理/03-采购收货/index.md)、[采购退货](../../05-WMS-库房管理/04-采购退货/index.md)。 |
+| 发货来源 | [发货协同](../05-发货协同/index.md)。 |
 
-    RECEIPT_RECORD ||--o| RETURN_RECORD : "退货关联"
-    UNRECEIVED_RECORD ||--o| RECEIPT_RECORD : "到货转化"
-```
+## 使用前准备
 
-## 核心流程
+| 需要确认什么 | 为什么重要 |
+| --- | --- |
+| ASN / 采购订单号 | 联查主键。 |
+| 当前查 SCP 还是 WMS | 避免改错系统。 |
+| 短缺与拒收是否启用 | 差异处理入口。 |
+
+【截图占位：采购收货记录列表（PO、ASN、数量）。】
+
+## 跟踪主线
 
 ```mermaid
-flowchart TD
-    A["供应商发货"] --> B["生成未收货记录"]
-    B --> C["采购方监控未收货列表"]
-    C --> D{"货物是否到厂?"}
-    D -->|否| E["持续跟踪，超期预警"]
-    E --> C
-    D -->|是| F["WMS 收货确认"]
-    F --> G["未收货记录转为收货记录"]
-    G --> H{"是否存在退货?"}
-    H -->|是| I["生成退货记录"]
-    H -->|否| J["采购跟踪完成"]
-    I --> J
-
-    subgraph 采购方监控
-        C
-        E
-    end
-
-    subgraph WMS操作
-        F
-    end
-
-    subgraph 异常处理
-        I
-    end
+flowchart LR
+    A["发货记录 ASN"] --> B["收货申请/任务/记录"]
+    B --> C["库存结果在 WMS"]
+    B --> D["短缺/拒收"]
+    C --> E["退货申请/任务/记录"]
+    C --> F["上架/检验（若启用且已迁）"]
 ```
 
-## 功能说明
+## 主对象
 
-### 1. 采购未收货记录
+| 对象 | 业务含义 |
+| --- | --- |
+| 采购收货申请/任务/记录 | 到货处理链；任务状态含 PENDING/PROCESSING/COMPLETED/CLOSED/REFUSAL。 |
+| 短缺明细 | 收货差异/短缺记录。 |
+| 采购退货申请/任务/记录 | 退货协同与结果。 |
+| 上架/检验页（scp-ui 存在） | 迁移中能力；完整规则以 WMS/QMS 为准。 |
 
-展示所有已发货但尚未完成收货的采购订单，支持超期预警和催货跟进。
+## 与 WMS / QMS 边界
 
-**功能入口**: 采购未收货记录
+| 协同方 | 本页负责 | 不在本页展开 |
+| --- | --- | --- |
+| WMS | 供应商侧跟踪与部分镜像对象 | 库存事务、余额、PDA 执行权威 |
+| QMS | 检验页迁移线索 | 来料检验结论与回写权威 |
+| 发票结算 | 收货结果作为开票数量来源线索 | 对账金额规则 |
 
-| 字段名 | 中文名 | 类型 | 约束 | 影响业务 | 备注 |
-|--------|--------|------|------|----------|------|
-| order_no | 采购订单号 | VARCHAR(50) | 必填 | 关联[采购订单](../02-采购订单/index.md) | |
-| delivery_no | 发货单号 | VARCHAR(50) | 非必填 | 关联发货记录 | |
-| material_code | 物料编码 | VARCHAR(50) | 必填 | 物料标识 | |
-| material_name | 物料名称 | VARCHAR(200) | 显示 | | |
-| shipped_qty | 已发货数量 | DECIMAL(12,4) | 显示 | 发货数量 | |
-| unreceived_qty | 未收货数量 | DECIMAL(12,4) | 计算 | 跟踪重点 | shipped_qty - received_qty |
-| expected_date | 预计到货日期 | DATE | 必填 | 超期判断依据 | |
-| overdue_days | 超期天数 | INT | 计算 | 催货优先级 | 当前日期 - expected_date |
-| supplier_name | 供应商名称 | VARCHAR(200) | 显示 | 催货联系 | |
+## 限制与待确认
 
-### 2. 采购收货记录
-
-展示所有已完成 WMS 收货的采购入库记录，为发票结算提供数据基础。
-
-**功能入口**: 采购收货记录
-
-| 字段名 | 中文名 | 类型 | 约束 | 影响业务 | 备注 |
-|--------|--------|------|------|----------|------|
-| receipt_no | 收货单号 | VARCHAR(50) | PK | WMS 收货单号 | |
-| order_no | 采购订单号 | VARCHAR(50) | FK | 关联[采购订单](../02-采购订单/index.md) | |
-| delivery_no | 发货单号 | VARCHAR(50) | 非必填 | 关联发货记录 | |
-| material_code | 物料编码 | VARCHAR(50) | 必填 | 物料标识 | |
-| material_name | 物料名称 | VARCHAR(200) | 显示 | | |
-| receipt_qty | 收货数量 | DECIMAL(12,4) | 必填 | [发票结算](../07-发票结算/index.md)依据 | |
-| receipt_date | 收货日期 | DATE | 必填 | 对账周期判定 | |
-| warehouse_code | 收货仓库 | VARCHAR(50) | 显示 | 库存归属 | |
-| status | 状态 | ENUM | 字典项 | 对账可开票状态 | |
-
-### 3. 采购退货记录
-
-展示所有采购退货记录，记录退货原因和数量，支持供应商绩效评估。
-
-**功能入口**: 采购退货记录
-
-| 字段名 | 中文名 | 类型 | 约束 | 影响业务 | 备注 |
-|--------|--------|------|------|----------|------|
-| return_no | 退货单号 | VARCHAR(50) | PK | WMS 退货单号 | |
-| order_no | 采购订单号 | VARCHAR(50) | FK | 关联[采购订单](../02-采购订单/index.md) | |
-| receipt_no | 收货单号 | VARCHAR(50) | FK | 关联原收货记录 | |
-| material_code | 物料编码 | VARCHAR(50) | 必填 | 物料标识 | |
-| material_name | 物料名称 | VARCHAR(200) | 显示 | | |
-| return_qty | 退货数量 | DECIMAL(12,4) | 必填 | 发票扣减依据 | |
-| return_reason | 退货原因 | VARCHAR(500) | 必填 | 供应商绩效 | 质量/数量/包装等 |
-| return_date | 退货日期 | DATE | 必填 | 对账周期判定 | |
-| status | 状态 | ENUM | 字典项 | 退货完成状态 | |
-
-## 业务规则
-
-1. **超期预警**：预计到货日期 + 缓冲天数（可配置）后仍未收货，系统自动标记为超期并警告
-2. **收货数据来源**：[采购收货](../../05-WMS-库房管理/03-采购收货/index.md)记录和退货记录从 WMS 回传，SCP 侧为只读展示
-3. **未收货清零**：全部收货完成后，未收货记录自动移除
-4. **退货扣减**：退货数量从可开票收货数量中扣减
-
-## 搜索条件说明
-
-### 采购未收货记录搜索
-
-| 搜索字段 | 中文名 | 搜索类型 | 说明 |
-|----------|--------|----------|------|
-| supplier | 供应商 | 下拉选择 | 支持模糊搜索 |
-| order_no | 采购订单号 | 文本输入 | 支持精确搜索 |
-| material | 物料 | 下拉选择 | |
-| overdue | 是否超期 | 下拉选择 | 全部/是/否 |
-| date_range | 预计到货日期 | 日期区间 | |
-
-### 采购收货记录搜索
-
-| 搜索字段 | 中文名 | 搜索类型 | 说明 |
-|----------|--------|----------|------|
-| supplier | 供应商 | 下拉选择 | |
-| order_no | 采购订单号 | 文本输入 | |
-| receipt_no | 收货单号 | 文本输入 | |
-| date_range | 收货日期 | 日期区间 | |
-
-## 菜单树结构
-
-```
-采购未收货记录
-采购收货记录
-采购退货记录
-```
-
-## 相关模块接口
-
-| 模块 | 接口方向 | 说明 |
-|------|----------|------|
-| WMS_RECEIVING | [采购收货](../../05-WMS-库房管理/03-采购收货/index.md) | 收货结果回传至SCP |
-| WMS_RETURN | [采购退货](../../05-WMS-库房管理/04-采购退货/index.md) | 退货结果回传至SCP |
-| SCP_PURCHASE_ORDER | [采购订单](../02-采购订单/index.md) | 订单状态关联 |
-| SCP_INVOICE | [发票结算](../07-发票结算/index.md) | 收货记录作为开票依据 |
-
-## 版本历史
-
-| 版本 | 日期 | 说明 |
-|------|------|------|
-| 1.0 | 2026-05-21 | 从单页文档拆分为独立子页面 |
+- SCP 与 WMS 收货记录是否同一库表/同步镜像：**未证实**。
+- 若干 createInspect / createPutaway / createPurchasereturn 在 SCP 标注未实现：功能以 WMS 为准。
+- 「未收货记录」是否独立菜单或仅统计视图：以 scp-ui 实际菜单为准。
