@@ -1,6 +1,7 @@
 # MOM 制造运营管理系统 - 产品文档
 site_name: MOM 产品文档手册
 site_description: MOM 制造运营管理系统产品文档
+site_url: https://jiargcn.github.io/MomProductDocument/
 
 # 主题配置
 theme:
@@ -366,8 +367,8 @@ extra_javascript:
   - javascripts/extra.js
 
 # 仓库信息
-repo_url: ''
-repo_name: ''
+repo_url: https://github.com/jiargcn/MomProductDocument
+repo_name: jiargcn/MomProductDocument
 
 # 版权
 copyright: Copyright &copy; 2026 MOM 产品团队
