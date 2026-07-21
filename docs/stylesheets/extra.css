@@ -47,17 +47,102 @@ html body .md-sidebar--primary li.md-nav__item--nested > .md-nav__link {
   font-weight: bold;
 }
 
-/* 占位符标记 - 红色高亮 - 仅精确匹配 */
-/* 这些选择器只匹配完全等于占位符关键词的情况 */
-.md-typeset .pending-placeholder,
-.md-typeset .待确认标签,
-.md-typeset .待截图标签,
-.md-typeset .待补充标签 {
-  color: #d32f2f !important;
-  background-color: rgba(211, 47, 47, 0.1);
-  padding: 0.1em 0.3em;
-  border-radius: 0.2em;
-  font-weight: 500;
+/* ------------------------------------------------------------------
+ * 文档建设缺口标记（面向建设/评审快速扫读；默认带 emoji 前缀）
+ * 写法见 project-docs/00-需关注/缺口标记写法规范.md
+ * ------------------------------------------------------------------ */
+
+.md-typeset .doc-gap {
+  display: inline;
+  padding: 0.12em 0.45em;
+  border-radius: 0.25em;
+  font-weight: 700;
+  font-size: 0.92em;
+  white-space: nowrap;
+  border-left: 3px solid transparent;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+/* 🔍 待核验：已有说法，缺环境/源码复核 */
+.md-typeset .doc-gap--verify {
+  color: #8a5a00;
+  background-color: #fff3cd;
+  border-left-color: #e6a700;
+}
+
+/* ❓ 待确认：缺产品/开发口径 */
+.md-typeset .doc-gap--confirm {
+  color: #9a3412;
+  background-color: #ffedd5;
+  border-left-color: #ea580c;
+}
+
+/* 📝 待补充：结构在、内容空 */
+.md-typeset .doc-gap--fill {
+  color: #1e3a8a;
+  background-color: #dbeafe;
+  border-left-color: #2563eb;
+}
+
+/* 📷/📐 媒体占位（句中少用，优先 admonition） */
+.md-typeset .doc-gap--media {
+  color: #713f12;
+  background-color: #fef9c3;
+  border-left-color: #ca8a04;
+  border: 1px dashed #ca8a04;
+  border-left-width: 3px;
+}
+
+/* ⛔ 高风险勿培训（少用） */
+.md-typeset .doc-gap--danger {
+  color: #7f1d1d;
+  background-color: #fee2e2;
+  border-left-color: #dc2626;
+}
+
+/* 暗色模式 */
+[data-md-color-scheme="slate"] .md-typeset .doc-gap--verify {
+  color: #fde68a;
+  background-color: rgba(230, 167, 0, 0.22);
+}
+[data-md-color-scheme="slate"] .md-typeset .doc-gap--confirm {
+  color: #fdba74;
+  background-color: rgba(234, 88, 12, 0.22);
+}
+[data-md-color-scheme="slate"] .md-typeset .doc-gap--fill {
+  color: #bfdbfe;
+  background-color: rgba(37, 99, 235, 0.25);
+}
+[data-md-color-scheme="slate"] .md-typeset .doc-gap--media {
+  color: #fde047;
+  background-color: rgba(202, 138, 4, 0.2);
+  border-color: #ca8a04;
+}
+[data-md-color-scheme="slate"] .md-typeset .doc-gap--danger {
+  color: #fecaca;
+  background-color: rgba(220, 38, 38, 0.25);
+}
+
+/* 媒体占位 admonition（!!! example）虚线强调 */
+.md-typeset .admonition.example,
+.md-typeset details.example {
+  border-color: #ca8a04;
+  border-style: dashed;
+  background-color: #fffbeb;
+}
+.md-typeset .admonition.example > .admonition-title,
+.md-typeset details.example > summary {
+  background-color: #fef3c7;
+  border-color: #ca8a04;
+}
+[data-md-color-scheme="slate"] .md-typeset .admonition.example,
+[data-md-color-scheme="slate"] .md-typeset details.example {
+  background-color: rgba(202, 138, 4, 0.12);
+}
+[data-md-color-scheme="slate"] .md-typeset .admonition.example > .admonition-title,
+[data-md-color-scheme="slate"] .md-typeset details.example > summary {
+  background-color: rgba(202, 138, 4, 0.22);
 }
 
 /* Mermaid 图表容器 - 弹窗功能 */
