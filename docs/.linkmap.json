@@ -79,9 +79,9 @@
   "PS_RESULT_QUERY":  { "name": "查询排程结果",   "path": "11-PS-排程管理/05-查询排程结果/index.md" },
   "PS_PROD_PLAN_QUERY": { "name": "生产计划查询", "path": "11-PS-排程管理/06-生产计划查询/index.md" },
 
-  "ERP_FINANCE":      { "name": "ERP财务",         "path": "01-总体框架/architecture.md" },
-  "ERP_PURCHASE":     { "name": "ERP采购",         "path": "01-总体框架/architecture.md" },
-  "ERP_FORECAST":     { "name": "ERP预测",         "path": "01-总体框架/architecture.md" },
+  "ERP_FINANCE":      { "name": "ERP财务",         "path": "01-总体框架/06-技术架构.md" },
+  "ERP_PURCHASE":     { "name": "ERP采购",         "path": "01-总体框架/06-技术架构.md" },
+  "ERP_FORECAST":     { "name": "ERP预测",         "path": "01-总体框架/06-技术架构.md" },
   "TMS_TRACKING":     { "name": "运输管理",        "path": null },
   "FM_PAYABLE":       { "name": "应付管理",        "path": null }
 }
