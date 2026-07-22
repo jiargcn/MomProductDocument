@@ -244,6 +244,7 @@ plugins:
 # Markdown 扩展
 markdown_extensions:
   - admonition
+  - attr_list
   - pymdownx.details
   - pymdownx.highlight
   - pymdownx.inlinehilite
@@ -252,6 +253,9 @@ markdown_extensions:
   - tables
   - toc:
       permalink: true
+      slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds:
+          case: lower
   - fenced_code
 
 # 扩展资源
