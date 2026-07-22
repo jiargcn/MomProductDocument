@@ -45,11 +45,11 @@ python scripts/link-interfaces.py
 
 ## 文档风格与命名约定
 
-正文使用简体中文，保留英文原文中的 code、API、命令和 error message。业务模块遵循统一页面模型：`<module>/index.md` 写模块定位、业务分组表、核心流程、主数据维护顺序和相关接口；`<module>/<NN-子功能>/index.md` 写业务分组表和叶页概览；`<module>/<NN-子功能>/<叶页>.md` 写功能说明、字段表、相关模块接口表和业务规则。新增页面时先创建 `.md`，再挂入 `mkdocs.yml`，如涉及新 CODE 同步更新 `.linkmap.json`。
+正文使用简体中文，保留英文原文中的 code、API、命令和 error message。业务模块遵循统一页面模型：`<module>/index.md` 写模块定位、业务分组表、核心流程、主数据维护顺序和相关接口；`<module>/<NN-子功能>/index.md` 写业务分组表和叶页概览；`<module>/<NN-子功能>/<叶页>.md` 写功能说明、**字段业务语义（按行为模式 P1–P14，非技术映射）**、相关模块接口表和业务规则。字段语义写法见 `docs/02-业务模型/04-页面数据字典规范.md` 与 `project-docs/00-需关注/实体说明页标准模板.md`。新增页面时先创建 `.md`，再挂入 `mkdocs.yml`，如涉及新 CODE 同步更新 `.linkmap.json`。
 
 ## 跨页面链接系统
 
-`docs/.linkmap.json` 维护 `CODE_NAME → { name, path }` 映射。`scripts/link-interfaces.py` 会执行三类重写：Phase 1 将「相关模块接口」表中的中文名链接到目标页；Phase 2 将「业务分组」表中的分组名链接到对应 `index.md`；Phase 3 将「业务规则」段和字段表「影响业务/备注」列中的模块名改为内联链接。脚本会直接修改 Markdown 文件，运行后必须复查 diff。
+`docs/.linkmap.json` 维护 `CODE_NAME → { name, path }` 映射。`scripts/link-interfaces.py` 会执行三类重写：Phase 1 将「相关模块接口」表中的中文名链接到目标页；Phase 2 将「业务分组」表中的分组名链接到对应 `index.md`；Phase 3 将「业务规则」段和字段业务语义表「影响业务/备注」列中的模块名改为内联链接。脚本会直接修改 Markdown 文件，运行后必须复查 diff。
 
 ## 测试与校验要求
 
