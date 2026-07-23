@@ -43,6 +43,12 @@ python scripts/link-interfaces.py
 
 根据 `docs/.linkmap.json` 原地重写相关模块接口、业务分组和内联模块引用。新增页面、调整模块 CODE 或修改映射后必须运行，并用 `git diff` 检查脚本改动。
 
+```bash
+python scripts/pack-offline-site.py
+```
+
+离线打包入口：按 `mkdocs.yml` 导航顺序一次生成三个单文件到 `dist/`（`MOM产品文档-YYYYMMDD.pdf` / `.html` / `.md`）。PDF 含封面、目录、多级书签；HTML 为可单独打开的自包含文件（本地图与 Mermaid PNG 转 data URI）；MD 为合并正文（Mermaid 保留源码，图片路径相对仓库根）。也可 `python scripts/build-pdf.py`（同入口），或追加参数只打子集：`pdf` / `html` / `md`。
+
 ## 文档风格与命名约定
 
 正文使用简体中文，保留英文原文中的 code、API、命令和 error message。业务模块遵循统一页面模型：`<module>/index.md` 写模块定位、业务分组表、核心流程、主数据维护顺序和相关接口；`<module>/<NN-子功能>/index.md` 写业务分组表和叶页概览；`<module>/<NN-子功能>/<叶页>.md` 写功能说明、**字段业务语义（按行为模式 P1–P14，非技术映射）**、相关模块接口表和业务规则。字段语义写法见 `docs/02-业务模型/04-页面数据字典规范.md` 与 `project-docs/00-需关注/实体说明页标准模板.md`。新增**主文档**须挂入 `mkdocs.yml`；`*-维护与查询参考.md` **默认不进侧栏**（由主文档内链进入）。侧栏顶层为：认识系统 / 业务应用 / 平台与集成 / 版本路线图。如涉及新 CODE 同步更新 `.linkmap.json`。
@@ -66,3 +72,5 @@ python scripts/link-interfaces.py
 ## Agent 专用说明
 
 除非用户明确要求其他格式，否则只生成 Markdown 文档。不要直接修改 `site/` 构建产物；应修改 `docs/`、`scripts/`、`mkdocs.yml` 或主题覆盖文件。
+
+**离线打包约定**：仅当用户明确要求「打包」时才执行打包流程。用户只说「打包」、未限定格式时，默认同时产出 PDF + HTML + MD 三个单文件（`python scripts/pack-offline-site.py`）。若指定某一种/几种格式，只打对应产物。未明确要求打包时，不要跑打包。
