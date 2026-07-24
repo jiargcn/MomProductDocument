@@ -2,7 +2,10 @@
 
 面向离散制造业的 MOM（Manufacturing Operations Management）产品文档仓库。正式文档以 **测试 / 实施 / 运维** 并列读者的「业务行为说明书」书写：功能范围清楚、逻辑可讲、配置可落地、验证可开单。
 
-**在线站点：** [https://jiargcn.github.io/MomProductDocument/](https://jiargcn.github.io/MomProductDocument/)
+**在线站点：**
+
+- GitHub Pages：[https://jiargcn.github.io/MomProductDocument/](https://jiargcn.github.io/MomProductDocument/)
+- Cloudflare Pages：[https://mom-product-document.pages.dev/](https://mom-product-document.pages.dev/)
 
 ## 仓库内容
 
@@ -31,6 +34,20 @@ mkdocs build
 ```
 
 校验导航与 Markdown 渲染，产物输出到 `site/`（已 gitignore，请勿手改）。
+
+## 发布到 Cloudflare Pages
+
+正式地址：[https://mom-product-document.pages.dev/](https://mom-product-document.pages.dev/)（与 GitHub Pages 并存）。
+
+持续部署工作流：[`.github/workflows/deploy-cloudflare-pages.yml`](.github/workflows/deploy-cloudflare-pages.yml)（`main` 推送或手动 Run workflow）。需在仓库 Secrets 中配置：
+
+| Secret | 说明 |
+| --- | --- |
+| `CLOUDFLARE_ACCOUNT_ID` | 已配置时可忽略 |
+| `CLOUDFLARE_API_TOKEN` | [创建 Token](https://dash.cloudflare.com/profile/api-tokens)，模板选 **Edit Cloudflare Workers**（需含 Pages 编辑权限） |
+
+本地也可：`mkdocs build` 后执行  
+`npx wrangler pages deploy site --project-name=mom-product-document --branch=main`（需先 `npx wrangler login`）。
 
 ## 常用脚本
 
